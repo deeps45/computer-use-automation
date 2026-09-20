@@ -208,8 +208,15 @@ production operator is not running on the same machine as the automation worker.
 - **Real-time co-browsing console**: explicitly out of scope per the brief; a bare,
   functional Express console plus a scriptable API were built instead, and both control-
   transfer paths were exercised in `/evidence/`.
-- **Automated test suite**: `vitest` is wired into `package.json` but no tests were written
-  given the time-box; correctness was instead validated through the real, repeated
-  end-to-end runs in `/evidence/`, including one that caught a genuine locator bug (§3). If
-  continuing, unit tests for locator resolution and outcome-rule matching are the
-  highest-leverage next addition, since they are the two most failure-sensitive pieces.
+- **Test coverage is partial by design.** Unit tests (`npm test`, 22 tests) cover the
+  pure, highest-failure-sensitivity logic: locator-building (including a regression test
+  for the bug in §3), guardrail enforcement (allowlist bypass tricks, risk classification,
+  redaction), and artifact schema validation. The Playwright-dependent paths (the replay
+  executor, the discovery session, the escalation handoff) are **not** unit tested --
+  they're validated through the real, repeated end-to-end runs captured in `/evidence/`
+  instead, which is a deliberate trade-off given the time-box, not an oversight: those
+  paths need a live browser and a live target app to mean anything, and the evidence runs
+  already exercise every status/outcome branch (success, both business-outcome types, a
+  hard failure, and both escalation-resolution paths). If continuing, the next addition
+  would be a scripted integration harness that boots `target-app` and runs the CLI paths
+  in CI, rather than more unit tests.

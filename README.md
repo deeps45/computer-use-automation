@@ -4,11 +4,78 @@ An LLM discovers how to operate a back-office web console the first time; the ru
 recorded as a typed, versioned **capability artifact**; that artifact then **replays
 deterministically**, with no model in the loop, verifying checkpoints and classifying
 runtime outcomes (business outcome / recoverable / hard failure). When it can't safely
-proceed, it pauses and hands the live session to a human operator.
+proceed, it pauses and hands the live session to a human operator, then resumes.
 
-See **[REPORT.md](./REPORT.md)** for the design write-up and **[evidence/](./evidence/)**
-for logs and screenshots from real discovery and replay runs, including one that hits an
-error and one full human-in-the-loop escalation.
+Built for [interface.ai's take-home brief](./REPORT.md): the agent-facing product decides
+*what* to do; this is how it reliably and safely does it inside software that has no API.
+
+**[REPORT.md](./REPORT.md)** is the design write-up (architecture, schema, determinism,
+multi-tenant story, escalation model, safety, cuts). **[evidence/](./evidence/)** has logs
+and screenshots from real discovery and replay runs -- success, two kinds of business
+outcome, a hard failure, and two full human-in-the-loop escalations.
+
+## At a glance
+
+```mermaid
+flowchart LR
+    Goal[Natural-language goal] --> Loop
+
+    subgraph Loop [Discovery -- LLM in the loop]
+        direction TB
+        Observe --> Decide --> Act --> Observe
+    end
+
+    Loop -->|success| Artifact[(Capability artifact<br/>typed, versioned, reviewable)]
+    Artifact --> Replay
+
+    subgraph Replay [Replay -- deterministic, no LLM]
+        direction TB
+        Resolve[Resolve locator] --> Execute[Execute step] --> Rule{Outcome rule matched?}
+        Rule -->|no| Resolve
+    end
+
+    Replay --> Result[Result: success / business_outcome / failure]
+
+    Loop -.stuck or irreversible.-> Escalation{{Escalation}}
+    Replay -.irreversible step.-> Escalation
+    Escalation --> Operator[Operator console<br/>same live session]
+    Operator -.resume.-> Loop
+    Operator -.resume.-> Replay
+```
+
+A real extraction step from the actual saved artifact -- note the locator is a row-relative
+XPath keyed on a stable label, not on the balance's own (variable) value:
+
+```json
+{
+  "id": "s7", "type": "extract", "outputName": "savings_balance",
+  "target": {
+    "description": "Extract savings_balance",
+    "candidates": [
+      { "strategy": "xpath", "expression": "//tr[td[1][normalize-space()='Savings']]/td[3]" }
+    ],
+    "rationale": "Row-relative: identified by the stable row label \"Savings\" plus a fixed column offset, not by the cell's own (variable) value."
+  }
+}
+```
+
+And the discovery agent's actual view of that same page (screenshot from
+`evidence/discovery-creditvantage-lookup-member-balance-*/screenshots/07-after-action.png`):
+
+![Member detail page showing account balances](evidence/discovery-creditvantage-lookup-member-balance-1789875705883/screenshots/07-after-action.png)
+
+## Where each evaluation criterion is addressed
+
+| Criterion | Where |
+|---|---|
+| System design | [REPORT.md §1-2](./REPORT.md#1-architecture) |
+| Correctness of the core loop | [evidence/](./evidence/) (real discovery + replay runs); [`src/agent/`](./src/agent/), [`src/replay/`](./src/replay/) |
+| Robustness & error handling | [REPORT.md §3](./REPORT.md#3-determinism--error-handling) -- includes a real locator bug found and fixed during testing, with a regression test |
+| Human-in-the-loop escalation | [REPORT.md §5](./REPORT.md#5-escalation--handoff); [`src/handoff/`](./src/handoff/); two resolution paths in `/evidence/` |
+| Generalization to the real environment | [REPORT.md §4](./REPORT.md#4-heterogeneity--multi-tenant) |
+| Safety & data handling | [REPORT.md §6](./REPORT.md#6-safety); [`src/guardrails/`](./src/guardrails/) |
+| Code quality | `npm test` (22 unit tests: locators, guardrails, schema); `npm run typecheck` |
+| Communication | [REPORT.md](./REPORT.md), this README, [evidence/README.md](./evidence/README.md) |
 
 ## What's here
 
@@ -25,6 +92,8 @@ error and one full human-in-the-loop escalation.
 - `scenarios/` -- the two natural-language goals used for discovery.
 - `artifacts/` -- saved capability artifacts (JSON), produced by discovery.
 - `evidence/` -- logs/screenshots from real runs (see `evidence/README.md`).
+- `*.test.ts` files alongside the modules they test (locator building, guardrails,
+  artifact schema) -- run with `npm test`.
 
 ## Setup
 
@@ -37,6 +106,11 @@ cp .env.example .env   # then edit values as needed
 ```
 
 Everything below reads its config from `.env` (via `dotenv`) or matching env vars.
+
+```bash
+npm test         # 22 unit tests: locator building, guardrails, artifact schema
+npm run typecheck
+```
 
 ## Run without any live services / API key
 
