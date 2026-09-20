@@ -20,25 +20,25 @@ outcome, a hard failure, and two full human-in-the-loop escalations.
 flowchart LR
     Goal[Natural-language goal] --> Loop
 
-    subgraph Loop [Discovery -- LLM in the loop]
+    subgraph Loop [Discovery: LLM in the loop]
         direction TB
         Observe --> Decide --> Act --> Observe
     end
 
-    Loop -->|success| Artifact[(Capability artifact<br/>typed, versioned, reviewable)]
+    Loop -->|success| Artifact[Capability artifact: typed, versioned, reviewable]
     Artifact --> Replay
 
-    subgraph Replay [Replay -- deterministic, no LLM]
+    subgraph Replay [Replay: deterministic, no LLM]
         direction TB
-        Resolve[Resolve locator] --> Execute[Execute step] --> Rule{Outcome rule matched?}
+        Resolve[Resolve locator] --> Execute[Execute step] --> Rule[Outcome rule matched?]
         Rule -->|no| Resolve
     end
 
-    Replay --> Result[Result: success / business_outcome / failure]
+    Replay --> Result[Result: success or business_outcome or failure]
 
-    Loop -.stuck or irreversible.-> Escalation{{Escalation}}
+    Loop -.stuck or irreversible.-> Escalation[Escalation]
     Replay -.irreversible step.-> Escalation
-    Escalation --> Operator[Operator console<br/>same live session]
+    Escalation --> Operator[Operator console: same live session]
     Operator -.resume.-> Loop
     Operator -.resume.-> Replay
 ```
