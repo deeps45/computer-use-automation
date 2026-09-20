@@ -11,8 +11,10 @@ Built for [interface.ai's take-home brief](./REPORT.md): the agent-facing produc
 
 **[REPORT.md](./REPORT.md)** is the design write-up (architecture, schema, determinism,
 multi-tenant story, escalation model, safety, cuts). **[evidence/](./evidence/)** has logs
-and screenshots from real discovery and replay runs -- success, two kinds of business
-outcome, a hard failure, and two full human-in-the-loop escalations.
+and screenshots from real discovery and replay runs covering every outcome branch: success,
+three kinds of business outcome, a recoverable condition that fails to clear and downgrades
+safely, two kinds of hard failure (one of them a genuine locator bug this project's own
+testing caught and fixed), and all three human-in-the-loop escalation resolutions.
 
 ## At a glance
 
@@ -69,7 +71,7 @@ XPath keyed on a stable label, not on the balance's own (variable) value:
 | Human-in-the-loop escalation | [REPORT.md §5](./REPORT.md#5-escalation--handoff); [`src/handoff/`](./src/handoff/); all three resolution paths (approve, manual, abort) exercised in `/evidence/` |
 | Generalization to the real environment | [REPORT.md §4](./REPORT.md#4-heterogeneity--multi-tenant) |
 | Safety & data handling | [REPORT.md §6](./REPORT.md#6-safety); [`src/guardrails/`](./src/guardrails/) |
-| Code quality | `npm test` (22 unit tests: locators, guardrails, schema); `npm run typecheck` |
+| Code quality | `npm test` (28 unit tests: locators, guardrails, schema, input validation); `npm run typecheck` |
 | Communication | [REPORT.md](./REPORT.md), this README, [evidence/README.md](./evidence/README.md) |
 
 ## Screenshots
@@ -211,8 +213,6 @@ show every state of both UIs in one place.
 </td>
 </tr>
 </table>
-| Code quality | `npm test` (22 unit tests: locators, guardrails, schema); `npm run typecheck` |
-| Communication | [REPORT.md](./REPORT.md), this README, [evidence/README.md](./evidence/README.md) |
 
 ## What's here
 
@@ -230,7 +230,7 @@ show every state of both UIs in one place.
 - `artifacts/` -- saved capability artifacts (JSON), produced by discovery.
 - `evidence/` -- logs/screenshots from real runs (see `evidence/README.md`).
 - `*.test.ts` files alongside the modules they test (locator building, guardrails,
-  artifact schema) -- run with `npm test`.
+  artifact schema, replay input validation) -- run with `npm test`.
 
 ## Setup
 
@@ -245,7 +245,7 @@ cp .env.example .env   # then edit values as needed
 Everything below reads its config from `.env` (via `dotenv`) or matching env vars.
 
 ```bash
-npm test         # 22 unit tests: locator building, guardrails, artifact schema
+npm test         # 28 unit tests: locator building, guardrails, artifact schema, input validation
 npm run typecheck
 ```
 
@@ -324,6 +324,10 @@ curl -X POST localhost:4300/act -H 'content-type: application/json' \
 
 ### 3. Replay the resulting artifact (deterministic, no LLM)
 
+Every command below is self-contained (safe to paste into a fresh terminal on its own --
+each one sets `CVSS_USERNAME`/`CVSS_PASSWORD` itself rather than assuming they're still
+exported from an earlier step):
+
 ```bash
 CVSS_USERNAME=ops_agent CVSS_PASSWORD=demo-pass npx tsx src/cli/replay.ts \
   creditvantage.lookup-member-balance --param memberId=12345
@@ -332,7 +336,8 @@ CVSS_USERNAME=ops_agent CVSS_PASSWORD=demo-pass npx tsx src/cli/replay.ts \
 Try a different member to prove it's parameterized, not hard-coded:
 
 ```bash
-npx tsx src/cli/replay.ts creditvantage.lookup-member-balance --param memberId=99999
+CVSS_USERNAME=ops_agent CVSS_PASSWORD=demo-pass npx tsx src/cli/replay.ts \
+  creditvantage.lookup-member-balance --param memberId=99999
 # -> {"status":"business_outcome","businessOutcome":{"code":"member_not_found",...}}
 ```
 
@@ -340,8 +345,8 @@ Try the irreversible-action capability, which pauses for approval unless you pas
 `--allow-irreversible`:
 
 ```bash
-npx tsx src/cli/replay.ts creditvantage.open-subaccount \
-  --param memberId=34567 --param accountType=Checking \
+CVSS_USERNAME=ops_agent CVSS_PASSWORD=demo-pass npx tsx src/cli/replay.ts \
+  creditvantage.open-subaccount --param memberId=34567 --param accountType=Checking \
   --param nickname="Rent Buffer" --param openingDeposit=150
 # -> prints an intervention request + the operator console URL; approve it with:
 curl -X POST localhost:4200/api/intervention/<id>/resume \
@@ -351,8 +356,8 @@ curl -X POST localhost:4200/api/intervention/<id>/resume \
 Trigger a hard failure on demand (no target-app changes needed):
 
 ```bash
-npx tsx src/cli/replay.ts creditvantage.lookup-member-balance \
-  --param memberId=12345 --simulate error500
+CVSS_USERNAME=ops_agent CVSS_PASSWORD=demo-pass npx tsx src/cli/replay.ts \
+  creditvantage.lookup-member-balance --param memberId=12345 --simulate error500
 ```
 
 ## Every run's evidence

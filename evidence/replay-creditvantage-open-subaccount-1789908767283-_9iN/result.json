@@ -1,0 +1,18 @@
+{
+  "status": "failure",
+  "capabilityId": "creditvantage.open-subaccount",
+  "capabilityVersion": 1,
+  "escalated": false,
+  "failure": {
+    "stepId": "input-validation",
+    "stepDescription": "Validate input parameters",
+    "expected": "inputs matching the capability's declared contract",
+    "observed": "Input parameter \"openingDeposit\" must be a number, got \"not-a-number\" (Opening deposit amount in USD; must be >= 25.)",
+    "message": "Input parameter \"openingDeposit\" must be a number, got \"not-a-number\" (Opening deposit amount in USD; must be >= 25.)"
+  },
+  "runId": "replay-creditvantage-open-subaccount-[REDACTED-CC]-_9iN",
+  "evidence": {
+    "logPath": "log.jsonl",
+    "screenshotPaths": []
+  }
+}

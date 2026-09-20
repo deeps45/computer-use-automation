@@ -54,6 +54,12 @@ Architecture section.
 | `*-9-bQ` | valid params, escalation resolved `abort` | **failure**, reported cleanly (`"Run aborted by operator at irreversible-action gate."`), not a crash |
 | `*-KJBr` | valid params, `approve_and_continue` | **success**, produced while capturing the operator-console screenshots below -- a second independent example of the approval path |
 | `*-zMMN` | valid params, `approve_and_continue` | **failure** -- an unplanned real example: between raising the escalation and it being approved, the live browser window was navigated away from the confirmation screen (by a person exploring the visible window). The replay engine correctly detected the target no longer resolved and reported a clean, debuggable hard failure (`stepId: s12`, expected vs. observed) instead of clicking the wrong thing. Left as-is rather than re-run, since it's a genuine example of the "diverged live session" failure mode discussed in REPORT.md |
+| `*-_9iN` | `openingDeposit=not-a-number` | **failure**, `stepId: input-validation` -- rejected before a browser is even launched, since the artifact declares `openingDeposit` as type `number` (`src/replay/executor.ts`'s `validateParams`). Distinct from `validation_error` above: this is the *contract* being violated (wrong shape), not a *business rule* (right shape, rejected by the target app) |
 
 All three escalation resolution decisions (`approve_and_continue`, `manual_completed`,
-`abort`) are exercised above, on both the discovery and replay paths.
+`abort`) are exercised on the replay path above. Only `approve_and_continue` is exercised on
+the discovery path in the two saved runs (`escalation_resumed` in
+`discovery-creditvantage-open-subaccount-*/log.jsonl`) -- the same `InterventionManager`
+code handles all three regardless of which path raised the request (see
+`src/agent/session-controller.ts`'s `raiseAndAwait`, shared by both), so this isn't a gap in
+what's implemented, just in which combination happened to get captured as evidence.

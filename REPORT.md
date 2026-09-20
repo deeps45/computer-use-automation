@@ -104,6 +104,15 @@ against the live page (banner text / URL / last document status code):
 Locator resolution tries each `TargetRef` candidate in order and requires an exact,
 *visible* match; it never guesses among ambiguous matches.
 
+Before any of that, `validateParams` checks the call itself against the artifact's declared
+input contract -- required params present, and each value matching its declared type
+(`number`/`boolean`) -- and rejects a malformed invocation with the same structured
+`{stepId, expected, observed, message}` failure shape as everything else, before a browser
+is even launched. This is a different failure class from a target-app business rule like the
+$25 minimum deposit: one is the *caller* getting the contract wrong, the other is the *app*
+correctly rejecting a well-formed request. Conflating them would blur exactly the
+distinction the brief asks for; see `evidence/*-_9iN/` for the former.
+
 **A real bug found via testing, and how it was fixed:** the first version of the tabular
 locator attached the column-header XPath as a *fallback* after the row-relative XPath for
 every cell. For a member with only one account (no "Checking" row), that fallback matched
@@ -176,7 +185,10 @@ skips its own execution and trusts it) -- see
 manually-performed action is logged with `"actor":"human"`, distinct from `"actor":"agent"`.
 
 **Resume.** `interventionManager.resolve(id, decision, notes)` unblocks the awaited promise
-in the paused run; `abort` ends the run as a reported failure, never a crash.
+in the paused run. A third decision, `abort`, is also exercised in `/evidence/`
+(`*-open-subaccount-*-9-bQ`): the operator declines, and the run ends as a clean, reported
+failure ("Run aborted by operator at irreversible-action gate") -- never a crash, and the
+caller gets a debuggable result either way.
 
 **Limits, honestly:** everything above lives in one process's memory -- kill the CLI and the
 pending request is gone. A real deployment needs a persistent request queue, real
@@ -216,11 +228,12 @@ production operator is not running on the same machine as the automation worker.
 - **Real-time co-browsing console**: explicitly out of scope per the brief; a bare,
   functional Express console plus a scriptable API were built instead, and both control-
   transfer paths were exercised in `/evidence/`.
-- **Test coverage is partial by design.** Unit tests (`npm test`, 22 tests) cover the
+- **Test coverage is partial by design.** Unit tests (`npm test`, 28 tests) cover the
   pure, highest-failure-sensitivity logic: locator-building (including a regression test
   for the bug in §3), guardrail enforcement (allowlist bypass tricks, risk classification,
-  redaction), and artifact schema validation. The Playwright-dependent paths (the replay
-  executor, the discovery session, the escalation handoff) are **not** unit tested --
+  redaction), artifact schema validation, and replay's input-contract validation. The
+  Playwright-dependent paths (the rest of the replay executor, the discovery session, the
+  escalation handoff) are **not** unit tested --
   they're validated through the real, repeated end-to-end runs captured in `/evidence/`
   instead, which is a deliberate trade-off given the time-box, not an oversight: those
   paths need a live browser and a live target app to mean anything, and the evidence runs

@@ -24,7 +24,29 @@ export async function runReplay(capability: Capability, params: Record<string, s
   const logger = new RunLogger("evidence", runId);
   logger.log({ type: "run_started", runType: "replay", goalOrCapabilityId: capability.id, params });
 
-  validateParams(capability, params);
+  const outputs: Record<string, string> = {};
+  let escalated = false;
+
+  const finish = (result: Omit<ReplayResult, "runId" | "evidence">): ReplayResult => {
+    const full: ReplayResult = { ...result, runId, escalated: result.escalated || escalated, evidence: { logPath: "log.jsonl", screenshotPaths: logger.screenshotPaths } };
+    logger.log({ type: "run_finished", status: full.status, detail: JSON.stringify(full.businessOutcome || full.failure || full.outputs || {}) });
+    logger.writeJson("result.json", full);
+    return full;
+  };
+
+  // Pre-flight: reject a malformed invocation before a browser is even launched, with the
+  // same structured result contract as every other failure mode -- never an uncaught throw.
+  try {
+    validateParams(capability, params);
+  } catch (err: any) {
+    return finish({
+      status: "failure",
+      capabilityId: capability.id,
+      capabilityVersion: capability.version,
+      escalated,
+      failure: { stepId: "input-validation", stepDescription: "Validate input parameters", expected: "inputs matching the capability's declared contract", observed: err.message, message: err.message },
+    });
+  }
 
   const headless = opts.headless ?? process.env.HEADLESS === "true";
   const browser = await chromium.launch({ headless });
@@ -35,16 +57,6 @@ export async function runReplay(capability: Capability, params: Record<string, s
   page.on("response", (resp) => {
     if (resp.request().resourceType() === "document") lastDocStatus = resp.status();
   });
-
-  const outputs: Record<string, string> = {};
-  let escalated = false;
-
-  const finish = (result: Omit<ReplayResult, "runId" | "evidence">): ReplayResult => {
-    const full: ReplayResult = { ...result, runId, escalated: result.escalated || escalated, evidence: { logPath: "log.jsonl", screenshotPaths: logger.screenshotPaths } };
-    logger.log({ type: "run_finished", status: full.status, detail: JSON.stringify(full.businessOutcome || full.failure || full.outputs || {}) });
-    logger.writeJson("result.json", full);
-    return full;
-  };
 
   try {
     const initialUrl = withSimulate(capability.target.baseUrl, opts.simulate);
@@ -253,10 +265,23 @@ function resolveValue(ref: ValueRef, params: Record<string, string>): string {
   return resolveSecret(ref.name);
 }
 
-function validateParams(capability: Capability, params: Record<string, string>) {
+/** Enforces the artifact's declared input contract before touching a browser at all --
+ * missing required params, and params that don't match their declared type, fail fast
+ * with a clear message rather than surfacing as a confusing mid-flow form-validation
+ * error on the target app three steps later. */
+export function validateParams(capability: Capability, params: Record<string, string>) {
   for (const input of capability.inputs) {
-    if (input.required && !(input.name in params)) {
+    const present = input.name in params;
+    if (input.required && !present) {
       throw new Error(`Missing required input parameter "${input.name}" (${input.description})`);
+    }
+    if (!present) continue;
+    const value = params[input.name];
+    if (input.type === "number" && (value.trim() === "" || Number.isNaN(Number(value)))) {
+      throw new Error(`Input parameter "${input.name}" must be a number, got "${value}" (${input.description})`);
+    }
+    if (input.type === "boolean" && value !== "true" && value !== "false") {
+      throw new Error(`Input parameter "${input.name}" must be "true" or "false", got "${value}" (${input.description})`);
     }
   }
 }
