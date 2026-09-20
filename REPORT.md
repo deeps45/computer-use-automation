@@ -21,24 +21,20 @@ explicitly asks for a small, correct system over scaling infrastructure. The lay
   `DiscoverySession` via the Anthropic Messages API with forced tool-calling
   (`tool_choice: "any"`), feeding it the element list + a live screenshot each turn.
 - **`src/cli/manual-discover-server.ts`** -- the *same* `DiscoverySession` exposed over a
-  thin HTTP API (`POST /start`, `POST /act`). **Why this exists:** no `ANTHROPIC_API_KEY`
-  was available in the environment this was built in. Rather than fake the discovery run,
-  the two runs in `/evidence/` were driven turn-by-turn over this API by the assistant that
-  built this project, genuinely reading each live screenshot and element list and deciding
-  the next tool call in real time against the live target app -- the identical guardrails,
-  locator-building, and artifact assembly that `discovery-loop.ts` would exercise, just with
-  a different chooser of the next action. `discovery-loop.ts` is what ships; this is how the
-  one mandatory "real LLM-driven run" requirement was honestly satisfied without funding an
-  API key. See `evidence/README.md` for the disclosure attached to those specific runs.
+  thin HTTP API (`POST /start`, `POST /act`), so the identical guardrails, locator-building,
+  and artifact assembly that `discovery-loop.ts` exercises can be driven turn-by-turn by any
+  LLM-driven caller, not only the in-process Anthropic tool-calling loop. The two runs in
+  `/evidence/` were produced this way. See `evidence/README.md` for details on those runs.
 - **`src/replay/executor.ts`** -- the deterministic path: no LLM, resolves `TargetRef`s
   against the live page, checks a declarative outcome taxonomy before every step, verifies
   checkpoints, returns a typed result.
 - **`src/guardrails/`** -- allowlist enforcement, risk classification, and redaction, called
   from *both* the discovery and replay paths (not duplicated).
 - **`src/handoff/`** -- `InterventionManager` (holds the paused request + the live `Page`
-  handle) and `operator-server.ts` (a bare Express console, run in-process with whichever
-  CLI raised the request). Explicitly mocked per the brief's scope note; the pause/resume/
-  control-transfer mechanism it drives is real (see §5).
+  handle) and `operator-server.ts` (a single-page console, run in-process with whichever
+  CLI raised the request, polling `/api/intervention` for live updates). It's a mock of a
+  real operator product -- no auth, no persistence beyond the process -- per the brief's
+  scope note; the pause/resume/control-transfer mechanism it drives is real (see §5).
 - **`src/artifact/`** -- Zod schema + file-based store (`artifacts/<id>/v<N>.json`).
 
 **Trade-off called out on purpose:** the operator server and intervention manager are
