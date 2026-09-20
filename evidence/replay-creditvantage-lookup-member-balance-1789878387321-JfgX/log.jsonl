@@ -1,0 +1,9 @@
+{"ts":"2026-09-20T04:26:27.323Z","type":"run_started","runType":"replay","goalOrCapabilityId":"creditvantage.lookup-member-balance","params":{"memberId":"40404"}}
+{"ts":"2026-09-20T04:26:28.480Z","type":"action_executed","actor":"agent","action":"fill","target":"Enter value into \"Username\" (via role)","outcome":"ok"}
+{"ts":"2026-09-20T04:26:28.525Z","type":"action_executed","actor":"agent","action":"fill","target":"Enter value into \"Password\" (via role)","outcome":"ok"}
+{"ts":"2026-09-20T04:26:29.092Z","type":"action_executed","actor":"agent","action":"click","target":"Click \"Sign In\" (via role)","outcome":"ok"}
+{"ts":"2026-09-20T04:26:29.133Z","type":"action_executed","actor":"agent","action":"fill","target":"Enter value into \"Member ID\" (via role)","outcome":"ok"}
+{"ts":"2026-09-20T04:26:29.681Z","type":"action_executed","actor":"agent","action":"click","target":"Click \"Search\" (via role)","outcome":"ok"}
+{"ts":"2026-09-20T04:26:30.247Z","type":"action_executed","actor":"agent","action":"click","target":"Click \"Open Record\" (via role)","outcome":"ok"}
+{"ts":"2026-09-20T04:26:30.266Z","type":"outcome_classified","bucket":"business_outcome","code":"permission_denied","message":"This member's record is access-restricted (legal hold)."}
+{"ts":"2026-09-20T04:26:30.296Z","type":"run_finished","status":"business_outcome","detail":"{\"code\":\"permission_denied\",\"message\":\"This member's record is access-restricted (legal hold).\"}"}

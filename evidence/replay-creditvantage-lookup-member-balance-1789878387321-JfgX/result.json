@@ -1,0 +1,18 @@
+{
+  "status": "business_outcome",
+  "capabilityId": "creditvantage.lookup-member-balance",
+  "capabilityVersion": 1,
+  "businessOutcome": {
+    "code": "permission_denied",
+    "message": "This member's record is access-restricted (legal hold)."
+  },
+  "escalated": false,
+  "runId": "replay-creditvantage-lookup-member-balance-[REDACTED-CC]-JfgX",
+  "evidence": {
+    "logPath": "log.jsonl",
+    "screenshotPaths": [
+      "screenshots/01-initial.png",
+      "screenshots/02-outcome-permission_denied.png"
+    ]
+  }
+}

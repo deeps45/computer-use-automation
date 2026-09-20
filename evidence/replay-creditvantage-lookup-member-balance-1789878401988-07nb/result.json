@@ -1,0 +1,21 @@
+{
+  "status": "failure",
+  "capabilityId": "creditvantage.lookup-member-balance",
+  "capabilityVersion": 1,
+  "escalated": false,
+  "failure": {
+    "stepId": "outcome-rule",
+    "stepDescription": "server_error",
+    "expected": "flow to proceed normally",
+    "observed": "Target application returned a server error.",
+    "message": "Target application returned a server error."
+  },
+  "runId": "replay-creditvantage-lookup-member-balance-[REDACTED-CC]-07nb",
+  "evidence": {
+    "logPath": "log.jsonl",
+    "screenshotPaths": [
+      "screenshots/01-initial.png",
+      "screenshots/02-outcome-app_error.png"
+    ]
+  }
+}

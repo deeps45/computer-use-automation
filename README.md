@@ -59,11 +59,6 @@ XPath keyed on a stable label, not on the balance's own (variable) value:
 }
 ```
 
-And the discovery agent's actual view of that same page (screenshot from
-`evidence/discovery-creditvantage-lookup-member-balance-*/screenshots/07-after-action.png`):
-
-![Member detail page showing account balances](evidence/discovery-creditvantage-lookup-member-balance-1789875705883/screenshots/07-after-action.png)
-
 ## Where each evaluation criterion is addressed
 
 | Criterion | Where |
@@ -71,9 +66,151 @@ And the discovery agent's actual view of that same page (screenshot from
 | System design | [REPORT.md §1-2](./REPORT.md#1-architecture) |
 | Correctness of the core loop | [evidence/](./evidence/) (real discovery + replay runs); [`src/agent/`](./src/agent/), [`src/replay/`](./src/replay/) |
 | Robustness & error handling | [REPORT.md §3](./REPORT.md#3-determinism--error-handling) -- includes a real locator bug found and fixed during testing, with a regression test |
-| Human-in-the-loop escalation | [REPORT.md §5](./REPORT.md#5-escalation--handoff); [`src/handoff/`](./src/handoff/); two resolution paths in `/evidence/` |
+| Human-in-the-loop escalation | [REPORT.md §5](./REPORT.md#5-escalation--handoff); [`src/handoff/`](./src/handoff/); all three resolution paths (approve, manual, abort) exercised in `/evidence/` |
 | Generalization to the real environment | [REPORT.md §4](./REPORT.md#4-heterogeneity--multi-tenant) |
 | Safety & data handling | [REPORT.md §6](./REPORT.md#6-safety); [`src/guardrails/`](./src/guardrails/) |
+| Code quality | `npm test` (22 unit tests: locators, guardrails, schema); `npm run typecheck` |
+| Communication | [REPORT.md](./REPORT.md), this README, [evidence/README.md](./evidence/README.md) |
+
+## Screenshots
+
+Every screen below is a real, current screenshot from a fresh run against this repo's own
+code -- not a mockup. Full discovery/replay logs behind each state are indexed in
+[evidence/README.md](./evidence/README.md); these are supplementary, taken specifically to
+show every state of both UIs in one place.
+
+### The target app (deliberately legacy: table layouts, no test IDs, no semantic classes)
+
+<table>
+<tr>
+<td width="50%">
+
+**Sign in**
+![Sign in](docs/screenshots/target-app/01-login.png)
+
+</td>
+<td width="50%">
+
+**Member search**
+![Member search](docs/screenshots/target-app/02-search.png)
+
+</td>
+</tr>
+<tr>
+<td width="50%">
+
+**Search results**
+![Search results](docs/screenshots/target-app/03-search-results.png)
+
+</td>
+<td width="50%">
+
+**Member detail -- balances live in plain `<td>` cells**
+![Member detail with balances](docs/screenshots/target-app/04-member-detail.png)
+
+</td>
+</tr>
+<tr>
+<td width="50%">
+
+**Open sub-account**
+![Open sub-account form](docs/screenshots/target-app/05-subaccount-form-empty.png)
+
+</td>
+<td width="50%">
+
+**Form filled**
+![Sub-account form filled](docs/screenshots/target-app/06-subaccount-form-filled.png)
+
+</td>
+</tr>
+<tr>
+<td width="50%">
+
+**Confirmation -- the irreversible step, gated by a guardrail**
+![Confirmation screen with irreversibility warning](docs/screenshots/target-app/07-subaccount-confirm.png)
+
+</td>
+<td width="50%">
+
+**Success -- new account number to extract**
+![Success screen with new account number](docs/screenshots/target-app/08-subaccount-success.png)
+
+</td>
+</tr>
+<tr>
+<td width="50%">
+
+**Business outcome: validation error** (deposit below $25)
+![Validation error](docs/screenshots/target-app/09-validation-error.png)
+
+</td>
+<td width="50%">
+
+**Business outcome: member not found**
+![Member not found](docs/screenshots/target-app/10-member-not-found.png)
+
+</td>
+</tr>
+<tr>
+<td width="50%">
+
+**Business outcome: permission denied**
+![Permission denied](docs/screenshots/target-app/11-permission-denied.png)
+
+</td>
+<td width="50%">
+
+**Discovery agent's actual view of the balance screen** -- what the LLM saw and extracted from, mid-run
+![Discovery run screenshot](evidence/discovery-creditvantage-lookup-member-balance-1789875705883/screenshots/07-after-action.png)
+
+</td>
+</tr>
+</table>
+
+### The operator console (escalation & handoff)
+
+<table>
+<tr>
+<td width="50%">
+
+**Idle -- no open requests**
+![Operator console empty state](docs/screenshots/operator-console/01-empty.png)
+
+</td>
+<td width="50%">
+
+**A live, paused escalation** -- irreversible-action gate, with the exact live-session screenshot
+![Operator console with a pending intervention](docs/screenshots/operator-console/02-pending.png)
+
+</td>
+</tr>
+<tr>
+<td width="50%">
+
+**"Act directly on the live session" panel expanded** -- the stronger control-transfer path
+![Manual action panel expanded](docs/screenshots/operator-console/03-manual-action-panel.png)
+
+</td>
+<td width="50%">
+
+**Screenshot lightbox** (click any thumbnail)
+![Screenshot lightbox](docs/screenshots/operator-console/04-lightbox.png)
+
+</td>
+</tr>
+<tr>
+<td width="50%">
+
+**Resolved** -- decision, notes, and the human-performed action logged
+![Operator console resolved state](docs/screenshots/operator-console/05-resolved.png)
+
+</td>
+<td width="50%">
+
+</td>
+</tr>
+</table>
 | Code quality | `npm test` (22 unit tests: locators, guardrails, schema); `npm run typecheck` |
 | Communication | [REPORT.md](./REPORT.md), this README, [evidence/README.md](./evidence/README.md) |
 

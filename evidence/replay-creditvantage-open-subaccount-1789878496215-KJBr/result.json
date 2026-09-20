@@ -1,0 +1,18 @@
+{
+  "status": "success",
+  "capabilityId": "creditvantage.open-subaccount",
+  "capabilityVersion": 1,
+  "outputs": {
+    "new_account_number": "SA-9002-23456"
+  },
+  "escalated": true,
+  "runId": "replay-creditvantage-open-subaccount-[REDACTED-CC]-KJBr",
+  "evidence": {
+    "logPath": "log.jsonl",
+    "screenshotPaths": [
+      "screenshots/01-initial.png",
+      "screenshots/02-pre-irreversible-s12.png",
+      "screenshots/03-success.png"
+    ]
+  }
+}

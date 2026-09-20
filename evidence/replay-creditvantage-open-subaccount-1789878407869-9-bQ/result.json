@@ -1,0 +1,21 @@
+{
+  "status": "failure",
+  "capabilityId": "creditvantage.open-subaccount",
+  "capabilityVersion": 1,
+  "escalated": true,
+  "failure": {
+    "stepId": "s12",
+    "stepDescription": "Click \"Confirm & Open Account\"",
+    "expected": "operator approval",
+    "observed": "operator aborted",
+    "message": "Run aborted by operator at irreversible-action gate."
+  },
+  "runId": "replay-creditvantage-open-subaccount-[REDACTED-CC]-9-bQ",
+  "evidence": {
+    "logPath": "log.jsonl",
+    "screenshotPaths": [
+      "screenshots/01-initial.png",
+      "screenshots/02-pre-irreversible-s12.png"
+    ]
+  }
+}

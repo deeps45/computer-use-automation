@@ -1,0 +1,19 @@
+{"ts":"2026-09-20T04:28:16.217Z","type":"run_started","runType":"replay","goalOrCapabilityId":"creditvantage.open-subaccount","params":{"memberId":"23456","accountType":"Savings","nickname":"Screenshot Demo","openingDeposit":"200"}}
+{"ts":"2026-09-20T04:28:17.056Z","type":"action_executed","actor":"agent","action":"fill","target":"Enter value into \"Username\" (via role)","outcome":"ok"}
+{"ts":"2026-09-20T04:28:17.102Z","type":"action_executed","actor":"agent","action":"fill","target":"Enter value into \"Password\" (via role)","outcome":"ok"}
+{"ts":"2026-09-20T04:28:17.660Z","type":"action_executed","actor":"agent","action":"click","target":"Click \"Sign In\" (via role)","outcome":"ok"}
+{"ts":"2026-09-20T04:28:17.701Z","type":"action_executed","actor":"agent","action":"fill","target":"Enter value into \"Member ID\" (via role)","outcome":"ok"}
+{"ts":"2026-09-20T04:28:18.251Z","type":"action_executed","actor":"agent","action":"click","target":"Click \"Search\" (via role)","outcome":"ok"}
+{"ts":"2026-09-20T04:28:18.811Z","type":"action_executed","actor":"agent","action":"click","target":"Click \"Open Record\" (via role)","outcome":"ok"}
+{"ts":"2026-09-20T04:28:19.373Z","type":"action_executed","actor":"agent","action":"click","target":"Click \"Open Sub-Account\" (via role)","outcome":"ok"}
+{"ts":"2026-09-20T04:28:19.414Z","type":"action_executed","actor":"agent","action":"selectOption","target":"Select \"Savings\" in \"Account Type\" (via role)","outcome":"ok"}
+{"ts":"2026-09-20T04:28:19.421Z","type":"action_executed","actor":"agent","action":"fill","target":"Enter value into \"Nickname\" (via role)","outcome":"ok"}
+{"ts":"2026-09-20T04:28:19.427Z","type":"action_executed","actor":"agent","action":"fill","target":"Enter value into \"Opening Deposit\" (via role)","outcome":"ok"}
+{"ts":"2026-09-20T04:28:19.976Z","type":"action_executed","actor":"agent","action":"click","target":"Click \"Continue\" (via role)","outcome":"ok"}
+{"ts":"2026-09-20T04:28:20.029Z","type":"escalation_raised","requestId":"pmgqGEWb","reason":"Irreversible step requires approval: Click \"Confirm & Open Account\""}
+{"ts":"2026-09-20T04:28:35.439Z","type":"escalation_resumed","requestId":"pmgqGEWb","decision":"approve_and_continue","humanNotes":"Reviewed and approved for screenshot demo."}
+{"ts":"2026-09-20T04:28:36.000Z","type":"action_executed","actor":"agent","action":"click","target":"Click \"Confirm & Open Account\" (via role)","outcome":"ok"}
+{"ts":"2026-09-20T04:28:36.039Z","type":"action_executed","actor":"agent","action":"extract","target":"new_account_number (via xpath)","outcome":"ok","detail":"SA-9002-23456"}
+{"ts":"2026-09-20T04:28:36.043Z","type":"checkpoint","description":"Success screen shown with new sub-account number after confirming account creation.","passed":true}
+{"ts":"2026-09-20T04:28:36.044Z","type":"checkpoint","description":"Success screen shown with new sub-account number after confirming account creation.","passed":true}
+{"ts":"2026-09-20T04:28:36.080Z","type":"run_finished","status":"success","detail":"{\"new_account_number\":\"SA-9002-23456\"}"}

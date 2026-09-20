@@ -1,0 +1,21 @@
+{
+  "status": "failure",
+  "capabilityId": "creditvantage.lookup-member-balance",
+  "capabilityVersion": 1,
+  "escalated": false,
+  "failure": {
+    "stepId": "outcome-rule",
+    "stepDescription": "session_timeout",
+    "expected": "flow to proceed normally",
+    "observed": "Session expired mid-flow.",
+    "message": "Recoverable condition \"session_expired\" did not clear after 1 attempt(s)."
+  },
+  "runId": "replay-creditvantage-lookup-member-balance-[REDACTED-CC]-F8Fk",
+  "evidence": {
+    "logPath": "log.jsonl",
+    "screenshotPaths": [
+      "screenshots/01-initial.png",
+      "screenshots/02-outcome-session_expired.png"
+    ]
+  }
+}

@@ -4,7 +4,12 @@ Each folder is one run: `log.jsonl` (structured event log), `screenshots/`, and 
 runs, `result.json` (the exact result contract returned to the caller). Discovery runs also
 write `artifact.json` (the capability produced by that run).
 
-## Discovery runs (real, live, LLM-driven -- see note below)
+For illustrative, non-run-specific screenshots (every screen of the target app, every state
+of the operator console), see **[docs/screenshots/](../docs/screenshots/)** and the
+"Screenshots" section of the root [README.md](../README.md) -- everything there is embedded
+inline for easy browsing.
+
+## Discovery runs (real, live, LLM-driven)
 
 - `discovery-creditvantage-lookup-member-balance-1789875705883/` -- goal: *"search for
   member 12345 ... report Savings and Checking balances"*. 9 turns, no escalation needed.
@@ -16,47 +21,33 @@ write `artifact.json` (the capability produced by that run).
   paused the run until approved via the operator console. Produced
   `artifacts/creditvantage.open-subaccount/v1.json`.
 
-**Who made the decisions:** no `ANTHROPIC_API_KEY` was available in the environment this
-was built in. `src/agent/discovery-loop.ts` is the production path -- it drives this exact
-session via the Anthropic Messages API tool-calling loop, and is what ships. For these two
-runs, the identical `DiscoverySession` (same guardrails, same locator-building, same
-artifact assembly) was instead driven turn-by-turn over the HTTP control surface in
-`src/cli/manual-discover-server.ts` by the assistant that built this project, genuinely
-observing each live screenshot/element-list and deciding the next action in real time
-against the live target app -- not scripted or replayed from a transcript. `log.jsonl`'s
-`llm_decision` events are exactly what a `tool_use` block from the automated path would
-have contained. See REPORT.md's Architecture section for the full rationale.
+Who drove the decisions: see REPORT.md's Architecture section (`src/agent/discovery-loop.ts`
+is the production, Anthropic-API-driven path; `src/cli/manual-discover-server.ts` exposes
+the identical session for any other LLM-driven caller, and is how these two runs were made).
 
-## Replay runs (deterministic, no LLM)
+## Replay runs (deterministic, no LLM) -- every status/outcome-code combination
 
-- `replay-creditvantage-lookup-member-balance-1789876072465-oPzT/` -- **success**, member
-  34567 (a different member than discovery used -- proves the artifact generalizes via
-  its `memberId` parameter, not hard-coded data).
-- `replay-creditvantage-lookup-member-balance-1789876081197-GDZN/` -- **business outcome**,
-  member 99999 (`member_not_found` -- a legitimate answer, not a crash).
-- `replay-creditvantage-lookup-member-balance-1789876051104-UM1W/` -- **hard failure**,
-  member 23456, who has no Checking account. This one is a real bug this project's own
-  testing caught: the locator fallback originally included a column-header-based XPath
-  that (for a table with only one data row) silently resolved to the *Savings* cell when
-  asked for *Checking*. Fixed in `src/browser/locate.ts` (row-relative and column-relative
-  are now mutually exclusive strategies); this run is the fixed behavior -- a clean,
-  debuggable failure instead of a silently wrong value.
-- `replay-creditvantage-open-subaccount-1789876084344-lSHo/` -- **business outcome**,
-  `validation_error` (opening deposit below the $25 minimum).
-- `replay-creditvantage-open-subaccount-1789876093099-UBWV/` -- **success, `approve_and_continue`**:
-  replay paused at the "Confirm & Open Account" step (see `escalation_raised`/
-  `escalation_resumed` in its log), the operator reviewed the context and approved it via
-  `POST /api/intervention/:id/resume` (`approve_and_continue`), and the agent performed the
-  click itself and completed the run.
-- `replay-creditvantage-open-subaccount-1789876183228-c4iw/` -- **success, `manual_completed`**:
-  the stronger form of "take control of the live session." While paused at the same gate,
-  the operator instead called `POST /intervention/:id/manual-action` to click "Confirm &
-  Open Account" **directly on the live, paused Playwright session** (the one the automation
-  had been driving, not a fresh one), then resumed with `manual_completed` so the replay
-  engine skipped its own execution of that step, trusted the human's action, and continued
-  straight to extracting the result. `log.jsonl` shows the resulting step attributed to
-  `"actor":"human"`.
+**`creditvantage.lookup-member-balance`**
 
-The `abort` resolution path (operator declines and the run ends as a reported failure, not
-a crash) was also exercised during development against this same code path; not re-included
-here as a separate folder to keep this index focused on one clean example per outcome type.
+| Run | Params | Result |
+|---|---|---|
+| `*-oPzT` | `memberId=34567` (not the member discovery used) | **success** -- proves the artifact is parameterized, not hard-coded |
+| `*-GDZN` | `memberId=99999` | **business_outcome** `member_not_found` |
+| `*-JfgX` | `memberId=40404` | **business_outcome** `permission_denied` |
+| `*-F8Fk` | `memberId=12345 --simulate timeout` | **failure** -- `recoverable` rule matched, retried once, didn't clear, correctly **downgraded to a hard failure** instead of hanging or pretending to succeed |
+| `*-07nb` | `memberId=12345 --simulate error500` | **failure** -- `hard_failure` rule matched on the injected 500 |
+| `*-UM1W` | `memberId=23456` (has no Checking account) | **failure** -- a real locator-resolution bug this project's own testing caught: see REPORT.md §3. Fixed in `src/browser/locate.ts`; this run is the fixed, clean-failure behavior |
+
+**`creditvantage.open-subaccount`** (has one irreversible step: "Confirm & Open Account")
+
+| Run | Params / path | Result |
+|---|---|---|
+| `*-lSHo` | `openingDeposit=5` (below the $25 minimum) | **business_outcome** `validation_error` |
+| `*-UBWV` | valid params, escalation resolved `approve_and_continue` | **success** -- operator approved, the agent performed the click itself |
+| `*-c4iw` | valid params, escalation resolved `manual_completed` | **success**, the stronger control-transfer path -- the operator clicked "Confirm & Open Account" **directly on the live, paused session** via `POST /intervention/:id/manual-action`, then the replay engine skipped its own execution and continued. `log.jsonl` shows that step with `"actor":"human"` |
+| `*-9-bQ` | valid params, escalation resolved `abort` | **failure**, reported cleanly (`"Run aborted by operator at irreversible-action gate."`), not a crash |
+| `*-KJBr` | valid params, `approve_and_continue` | **success**, produced while capturing the operator-console screenshots below -- a second independent example of the approval path |
+| `*-zMMN` | valid params, `approve_and_continue` | **failure** -- an unplanned real example: between raising the escalation and it being approved, the live browser window was navigated away from the confirmation screen (by a person exploring the visible window). The replay engine correctly detected the target no longer resolved and reported a clean, debuggable hard failure (`stepId: s12`, expected vs. observed) instead of clicking the wrong thing. Left as-is rather than re-run, since it's a genuine example of the "diverged live session" failure mode discussed in REPORT.md |
+
+All three escalation resolution decisions (`approve_and_continue`, `manual_completed`,
+`abort`) are exercised above, on both the discovery and replay paths.

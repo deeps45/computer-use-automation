@@ -1,0 +1,15 @@
+{"ts":"2026-09-20T04:26:47.871Z","type":"run_started","runType":"replay","goalOrCapabilityId":"creditvantage.open-subaccount","params":{"memberId":"12345","accountType":"Savings","nickname":"Abort Test","openingDeposit":"45"}}
+{"ts":"2026-09-20T04:26:48.656Z","type":"action_executed","actor":"agent","action":"fill","target":"Enter value into \"Username\" (via role)","outcome":"ok"}
+{"ts":"2026-09-20T04:26:48.698Z","type":"action_executed","actor":"agent","action":"fill","target":"Enter value into \"Password\" (via role)","outcome":"ok"}
+{"ts":"2026-09-20T04:26:49.252Z","type":"action_executed","actor":"agent","action":"click","target":"Click \"Sign In\" (via role)","outcome":"ok"}
+{"ts":"2026-09-20T04:26:49.294Z","type":"action_executed","actor":"agent","action":"fill","target":"Enter value into \"Member ID\" (via role)","outcome":"ok"}
+{"ts":"2026-09-20T04:26:49.858Z","type":"action_executed","actor":"agent","action":"click","target":"Click \"Search\" (via role)","outcome":"ok"}
+{"ts":"2026-09-20T04:26:50.417Z","type":"action_executed","actor":"agent","action":"click","target":"Click \"Open Record\" (via role)","outcome":"ok"}
+{"ts":"2026-09-20T04:26:50.976Z","type":"action_executed","actor":"agent","action":"click","target":"Click \"Open Sub-Account\" (via role)","outcome":"ok"}
+{"ts":"2026-09-20T04:26:51.017Z","type":"action_executed","actor":"agent","action":"selectOption","target":"Select \"Savings\" in \"Account Type\" (via role)","outcome":"ok"}
+{"ts":"2026-09-20T04:26:51.024Z","type":"action_executed","actor":"agent","action":"fill","target":"Enter value into \"Nickname\" (via role)","outcome":"ok"}
+{"ts":"2026-09-20T04:26:51.029Z","type":"action_executed","actor":"agent","action":"fill","target":"Enter value into \"Opening Deposit\" (via role)","outcome":"ok"}
+{"ts":"2026-09-20T04:26:51.580Z","type":"action_executed","actor":"agent","action":"click","target":"Click \"Continue\" (via role)","outcome":"ok"}
+{"ts":"2026-09-20T04:26:51.632Z","type":"escalation_raised","requestId":"Lq3iT2wC","reason":"Irreversible step requires approval: Click \"Confirm & Open Account\""}
+{"ts":"2026-09-20T04:26:56.283Z","type":"escalation_resumed","requestId":"Lq3iT2wC","decision":"abort","humanNotes":"Operator declined: deposit amount looks suspicious, escalating to compliance instead."}
+{"ts":"2026-09-20T04:26:56.284Z","type":"run_finished","status":"failure","detail":"{\"stepId\":\"s12\",\"stepDescription\":\"Click \\\"Confirm & Open Account\\\"\",\"expected\":\"operator approval\",\"observed\":\"operator aborted\",\"message\":\"Run aborted by operator at irreversible-action gate.\"}"}

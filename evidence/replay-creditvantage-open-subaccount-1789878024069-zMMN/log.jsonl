@@ -1,0 +1,15 @@
+{"ts":"2026-09-20T04:20:24.071Z","type":"run_started","runType":"replay","goalOrCapabilityId":"creditvantage.open-subaccount","params":{"memberId":"34567","accountType":"Checking","nickname":"Live Demo","openingDeposit":"80"}}
+{"ts":"2026-09-20T04:20:30.974Z","type":"action_executed","actor":"agent","action":"fill","target":"Enter value into \"Username\" (via role)","outcome":"ok"}
+{"ts":"2026-09-20T04:20:31.017Z","type":"action_executed","actor":"agent","action":"fill","target":"Enter value into \"Password\" (via role)","outcome":"ok"}
+{"ts":"2026-09-20T04:20:31.834Z","type":"action_executed","actor":"agent","action":"click","target":"Click \"Sign In\" (via role)","outcome":"ok"}
+{"ts":"2026-09-20T04:20:31.871Z","type":"action_executed","actor":"agent","action":"fill","target":"Enter value into \"Member ID\" (via role)","outcome":"ok"}
+{"ts":"2026-09-20T04:20:32.448Z","type":"action_executed","actor":"agent","action":"click","target":"Click \"Search\" (via role)","outcome":"ok"}
+{"ts":"2026-09-20T04:20:33.057Z","type":"action_executed","actor":"agent","action":"click","target":"Click \"Open Record\" (via role)","outcome":"ok"}
+{"ts":"2026-09-20T04:20:33.645Z","type":"action_executed","actor":"agent","action":"click","target":"Click \"Open Sub-Account\" (via role)","outcome":"ok"}
+{"ts":"2026-09-20T04:20:33.687Z","type":"action_executed","actor":"agent","action":"selectOption","target":"Select \"Savings\" in \"Account Type\" (via role)","outcome":"ok"}
+{"ts":"2026-09-20T04:20:33.694Z","type":"action_executed","actor":"agent","action":"fill","target":"Enter value into \"Nickname\" (via role)","outcome":"ok"}
+{"ts":"2026-09-20T04:20:33.701Z","type":"action_executed","actor":"agent","action":"fill","target":"Enter value into \"Opening Deposit\" (via role)","outcome":"ok"}
+{"ts":"2026-09-20T04:20:34.257Z","type":"action_executed","actor":"agent","action":"click","target":"Click \"Continue\" (via role)","outcome":"ok"}
+{"ts":"2026-09-20T04:20:34.330Z","type":"escalation_raised","requestId":"pQBzdHYE","reason":"Irreversible step requires approval: Click \"Confirm & Open Account\""}
+{"ts":"2026-09-20T04:21:53.291Z","type":"escalation_resumed","requestId":"pQBzdHYE","decision":"approve_and_continue","humanNotes":"Approved live demo"}
+{"ts":"2026-09-20T04:21:53.368Z","type":"run_finished","status":"failure","detail":"{\"stepId\":\"s12\",\"stepDescription\":\"Click \\\"Confirm & Open Account\\\"\",\"expected\":\"Click \\\"Confirm & Open Account\\\"\",\"observed\":\"Could not resolve target \\\"Click \\\"Confirm & Open Account\\\"\\\". Tried, in order: role=button name=\\\"Confirm & Open Account\\\" | text=\\\"Confirm & Open Account\\\"\",\"message\":\"Hard failure at step \\\"s12\\\": Could not resolve target \\\"Click \\\"Confirm & Open Account\\\"\\\". Tried, in order: role=button name=\\\"Confirm & Open Account\\\" | text=\\\"Confirm & Open Account\\\"\"}"}

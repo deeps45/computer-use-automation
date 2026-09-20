@@ -1,0 +1,3 @@
+{"ts":"2026-09-20T04:26:41.990Z","type":"run_started","runType":"replay","goalOrCapabilityId":"creditvantage.lookup-member-balance","params":{"memberId":"12345"}}
+{"ts":"2026-09-20T04:26:42.748Z","type":"outcome_classified","bucket":"hard_failure","code":"app_error","message":"Target application returned a server error."}
+{"ts":"2026-09-20T04:26:42.776Z","type":"run_finished","status":"failure","detail":"{\"stepId\":\"outcome-rule\",\"stepDescription\":\"server_error\",\"expected\":\"flow to proceed normally\",\"observed\":\"Target application returned a server error.\",\"message\":\"Target application returned a server error.\"}"}
