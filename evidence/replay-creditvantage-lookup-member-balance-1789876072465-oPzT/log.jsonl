@@ -1,0 +1,12 @@
+{"ts":"2026-09-20T03:47:52.467Z","type":"run_started","runType":"replay","goalOrCapabilityId":"creditvantage.lookup-member-balance","params":{"memberId":"34567"}}
+{"ts":"2026-09-20T03:47:53.285Z","type":"action_executed","actor":"agent","action":"fill","target":"Enter value into \"Username\" (via role)","outcome":"ok"}
+{"ts":"2026-09-20T03:47:53.329Z","type":"action_executed","actor":"agent","action":"fill","target":"Enter value into \"Password\" (via role)","outcome":"ok"}
+{"ts":"2026-09-20T03:47:53.890Z","type":"action_executed","actor":"agent","action":"click","target":"Click \"Sign In\" (via role)","outcome":"ok"}
+{"ts":"2026-09-20T03:47:53.932Z","type":"action_executed","actor":"agent","action":"fill","target":"Enter value into \"Member ID\" (via role)","outcome":"ok"}
+{"ts":"2026-09-20T03:47:54.482Z","type":"action_executed","actor":"agent","action":"click","target":"Click \"Search\" (via role)","outcome":"ok"}
+{"ts":"2026-09-20T03:47:55.044Z","type":"action_executed","actor":"agent","action":"click","target":"Click \"Open Record\" (via role)","outcome":"ok"}
+{"ts":"2026-09-20T03:47:55.081Z","type":"action_executed","actor":"agent","action":"extract","target":"savings_balance (via xpath)","outcome":"ok","detail":"$152.33"}
+{"ts":"2026-09-20T03:47:55.085Z","type":"action_executed","actor":"agent","action":"extract","target":"checking_balance (via xpath)","outcome":"ok","detail":"$40.00"}
+{"ts":"2026-09-20T03:47:55.088Z","type":"checkpoint","description":"Member detail page for 12345 shows the account table with Savings and Checking balances visible.","passed":true}
+{"ts":"2026-09-20T03:47:55.089Z","type":"checkpoint","description":"Member detail page for 12345 shows the account table with Savings and Checking balances visible.","passed":true}
+{"ts":"2026-09-20T03:47:55.143Z","type":"run_finished","status":"success","detail":"{\"savings_balance\":\"$152.33\",\"checking_balance\":\"$40.00\"}"}

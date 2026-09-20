@@ -1,0 +1,318 @@
+{
+  "schemaVersion": "1.0",
+  "id": "creditvantage.lookup-member-balance",
+  "name": "Look up member and read balances",
+  "description": "Logs into the CreditVantage servicing console, searches for a member by ID, opens their record, and reports current Savings and Checking balances.",
+  "version": 1,
+  "createdAt": "2026-09-20T03:42:21.483Z",
+  "provenance": {
+    "discoveredBy": "llm",
+    "model": "claude-sonnet-5",
+    "discoveryRunId": "discovery-creditvantage-lookup-member-balance-[REDACTED-CC]"
+  },
+  "target": {
+    "appId": "creditvantage",
+    "label": "CreditVantage Servicing Console (mock)",
+    "baseUrl": "http://localhost:4173",
+    "allowedOrigins": [
+      "http://localhost:4173"
+    ]
+  },
+  "inputs": [
+    {
+      "name": "memberId",
+      "type": "string",
+      "required": true,
+      "description": "Core member/account-holder ID to look up.",
+      "example": "12345"
+    }
+  ],
+  "outputs": [
+    {
+      "name": "savings_balance",
+      "type": "string",
+      "description": "Savings balance is visible in the account table for member 12345."
+    },
+    {
+      "name": "checking_balance",
+      "type": "string",
+      "description": "Checking balance is visible in the account table for member 12345."
+    }
+  ],
+  "steps": [
+    {
+      "id": "s1",
+      "type": "fill",
+      "description": "Enter value into \"Username\"",
+      "risk": "safe",
+      "timeoutMs": 8000,
+      "target": {
+        "description": "Enter value into \"Username\"",
+        "candidates": [
+          {
+            "strategy": "role",
+            "role": "textbox",
+            "name": "Username",
+            "exact": true
+          },
+          {
+            "strategy": "label",
+            "text": "Username"
+          },
+          {
+            "strategy": "css",
+            "selector": "input[name=\"username\"]"
+          }
+        ],
+        "rationale": "Role + accessible name is preferred (stable across CSS/layout changes); a form-field name/id attribute is kept as a fallback because legacy markup often lacks it, and it is the most implementation-coupled option so it is tried last."
+      },
+      "value": {
+        "kind": "secretRef",
+        "name": "username"
+      }
+    },
+    {
+      "id": "s2",
+      "type": "fill",
+      "description": "Enter value into \"Password\"",
+      "risk": "safe",
+      "timeoutMs": 8000,
+      "target": {
+        "description": "Enter value into \"Password\"",
+        "candidates": [
+          {
+            "strategy": "role",
+            "role": "textbox",
+            "name": "Password",
+            "exact": true
+          },
+          {
+            "strategy": "label",
+            "text": "Password"
+          },
+          {
+            "strategy": "css",
+            "selector": "input[name=\"password\"]"
+          }
+        ],
+        "rationale": "Role + accessible name is preferred (stable across CSS/layout changes); a form-field name/id attribute is kept as a fallback because legacy markup often lacks it, and it is the most implementation-coupled option so it is tried last."
+      },
+      "value": {
+        "kind": "secretRef",
+        "name": "password"
+      }
+    },
+    {
+      "id": "s3",
+      "type": "click",
+      "description": "Click \"Sign In\"",
+      "risk": "safe",
+      "timeoutMs": 8000,
+      "target": {
+        "description": "Click \"Sign In\"",
+        "candidates": [
+          {
+            "strategy": "role",
+            "role": "button",
+            "name": "Sign In",
+            "exact": true
+          },
+          {
+            "strategy": "text",
+            "text": "Sign In",
+            "exact": true
+          }
+        ],
+        "rationale": "Role + accessible name is preferred (stable across CSS/layout changes); a form-field name/id attribute is kept as a fallback because legacy markup often lacks it, and it is the most implementation-coupled option so it is tried last."
+      }
+    },
+    {
+      "id": "s4",
+      "type": "fill",
+      "description": "Enter value into \"Member ID\"",
+      "risk": "safe",
+      "timeoutMs": 8000,
+      "target": {
+        "description": "Enter value into \"Member ID\"",
+        "candidates": [
+          {
+            "strategy": "role",
+            "role": "textbox",
+            "name": "Member ID",
+            "exact": true
+          },
+          {
+            "strategy": "label",
+            "text": "Member ID"
+          },
+          {
+            "strategy": "css",
+            "selector": "input[name=\"memberId\"]"
+          }
+        ],
+        "rationale": "Role + accessible name is preferred (stable across CSS/layout changes); a form-field name/id attribute is kept as a fallback because legacy markup often lacks it, and it is the most implementation-coupled option so it is tried last."
+      },
+      "value": {
+        "kind": "param",
+        "name": "memberId"
+      }
+    },
+    {
+      "id": "s5",
+      "type": "click",
+      "description": "Click \"Search\"",
+      "risk": "safe",
+      "timeoutMs": 8000,
+      "target": {
+        "description": "Click \"Search\"",
+        "candidates": [
+          {
+            "strategy": "role",
+            "role": "button",
+            "name": "Search",
+            "exact": true
+          },
+          {
+            "strategy": "text",
+            "text": "Search",
+            "exact": true
+          }
+        ],
+        "rationale": "Role + accessible name is preferred (stable across CSS/layout changes); a form-field name/id attribute is kept as a fallback because legacy markup often lacks it, and it is the most implementation-coupled option so it is tried last."
+      }
+    },
+    {
+      "id": "s6",
+      "type": "click",
+      "description": "Click \"Open Record\"",
+      "risk": "safe",
+      "timeoutMs": 8000,
+      "target": {
+        "description": "Click \"Open Record\"",
+        "candidates": [
+          {
+            "strategy": "role",
+            "role": "link",
+            "name": "Open Record",
+            "exact": true
+          },
+          {
+            "strategy": "text",
+            "text": "Open Record",
+            "exact": true
+          }
+        ],
+        "rationale": "Role + accessible name is preferred (stable across CSS/layout changes); a form-field name/id attribute is kept as a fallback because legacy markup often lacks it, and it is the most implementation-coupled option so it is tried last."
+      }
+    },
+    {
+      "id": "s7",
+      "type": "extract",
+      "description": "Extract savings_balance",
+      "risk": "safe",
+      "timeoutMs": 8000,
+      "target": {
+        "description": "Extract savings_balance",
+        "candidates": [
+          {
+            "strategy": "xpath",
+            "expression": "//tr[td[1][normalize-space()='Savings']]/td[3]"
+          },
+          {
+            "strategy": "xpath",
+            "expression": "(//th[normalize-space()='Balance']/ancestor::table[1]//td)[3]"
+          }
+        ],
+        "rationale": "Row-relative: identified by the stable row label \"Savings\" plus a fixed column offset, not by the cell's own (variable) value."
+      },
+      "outputName": "savings_balance",
+      "extractAttribute": "text"
+    },
+    {
+      "id": "s8",
+      "type": "extract",
+      "description": "Extract checking_balance",
+      "risk": "safe",
+      "timeoutMs": 8000,
+      "target": {
+        "description": "Extract checking_balance",
+        "candidates": [
+          {
+            "strategy": "xpath",
+            "expression": "//tr[td[1][normalize-space()='Checking']]/td[3]"
+          },
+          {
+            "strategy": "xpath",
+            "expression": "(//th[normalize-space()='Balance']/ancestor::table[1]//td)[3]"
+          }
+        ],
+        "rationale": "Row-relative: identified by the stable row label \"Checking\" plus a fixed column offset, not by the cell's own (variable) value."
+      },
+      "outputName": "checking_balance",
+      "extractAttribute": "text"
+    },
+    {
+      "id": "s9",
+      "type": "assertCheckpoint",
+      "description": "Member detail page for 12345 shows the account table with Savings and Checking balances visible.",
+      "risk": "safe",
+      "timeoutMs": 8000,
+      "checkpoint": {
+        "description": "Member detail page for 12345 shows the account table with Savings and Checking balances visible.",
+        "urlPattern": "/members/"
+      }
+    }
+  ],
+  "outcomeRules": [
+    {
+      "id": "not_found",
+      "when": {
+        "textPresent": "No member found for ID"
+      },
+      "outcome": "business_outcome",
+      "code": "member_not_found",
+      "message": "No member exists in the core for the given ID."
+    },
+    {
+      "id": "restricted",
+      "when": {
+        "textPresent": "do not have permission"
+      },
+      "outcome": "business_outcome",
+      "code": "permission_denied",
+      "message": "This member's record is access-restricted (legal hold)."
+    },
+    {
+      "id": "session_timeout",
+      "when": {
+        "urlPattern": "/login",
+        "textPresent": "session expired"
+      },
+      "outcome": "recoverable",
+      "code": "session_expired",
+      "message": "Session expired mid-flow.",
+      "recovery": {
+        "type": "retry",
+        "maxAttempts": 1,
+        "waitMs": 500
+      }
+    },
+    {
+      "id": "server_error",
+      "when": {
+        "statusCodeAtLeast": 500
+      },
+      "outcome": "hard_failure",
+      "code": "app_error",
+      "message": "Target application returned a server error."
+    }
+  ],
+  "successCheckpoint": {
+    "description": "Member detail page for 12345 shows the account table with Savings and Checking balances visible.",
+    "urlPattern": "/members/"
+  },
+  "risk": {
+    "hasIrreversibleSteps": false,
+    "irreversibleStepIds": []
+  }
+}

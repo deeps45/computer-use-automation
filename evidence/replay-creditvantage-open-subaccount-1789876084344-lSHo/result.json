@@ -1,0 +1,18 @@
+{
+  "status": "business_outcome",
+  "capabilityId": "creditvantage.open-subaccount",
+  "capabilityVersion": 1,
+  "businessOutcome": {
+    "code": "validation_error",
+    "message": "Opening-deposit/nickname validation failed on the sub-account form -- caller should resubmit with corrected inputs."
+  },
+  "escalated": false,
+  "runId": "replay-creditvantage-open-subaccount-[REDACTED-CC]-lSHo",
+  "evidence": {
+    "logPath": "log.jsonl",
+    "screenshotPaths": [
+      "screenshots/01-initial.png",
+      "screenshots/02-outcome-validation_error.png"
+    ]
+  }
+}

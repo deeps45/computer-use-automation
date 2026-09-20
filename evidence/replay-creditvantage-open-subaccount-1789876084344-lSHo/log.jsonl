@@ -1,0 +1,14 @@
+{"ts":"2026-09-20T03:48:04.346Z","type":"run_started","runType":"replay","goalOrCapabilityId":"creditvantage.open-subaccount","params":{"memberId":"34567","accountType":"Checking","nickname":"Rent Buffer","openingDeposit":"5"}}
+{"ts":"2026-09-20T03:48:05.126Z","type":"action_executed","actor":"agent","action":"fill","target":"Enter value into \"Username\" (via role)","outcome":"ok"}
+{"ts":"2026-09-20T03:48:05.170Z","type":"action_executed","actor":"agent","action":"fill","target":"Enter value into \"Password\" (via role)","outcome":"ok"}
+{"ts":"2026-09-20T03:48:05.736Z","type":"action_executed","actor":"agent","action":"click","target":"Click \"Sign In\" (via role)","outcome":"ok"}
+{"ts":"2026-09-20T03:48:05.776Z","type":"action_executed","actor":"agent","action":"fill","target":"Enter value into \"Member ID\" (via role)","outcome":"ok"}
+{"ts":"2026-09-20T03:48:06.326Z","type":"action_executed","actor":"agent","action":"click","target":"Click \"Search\" (via role)","outcome":"ok"}
+{"ts":"2026-09-20T03:48:06.885Z","type":"action_executed","actor":"agent","action":"click","target":"Click \"Open Record\" (via role)","outcome":"ok"}
+{"ts":"2026-09-20T03:48:07.448Z","type":"action_executed","actor":"agent","action":"click","target":"Click \"Open Sub-Account\" (via role)","outcome":"ok"}
+{"ts":"2026-09-20T03:48:07.490Z","type":"action_executed","actor":"agent","action":"selectOption","target":"Select \"Savings\" in \"Account Type\" (via role)","outcome":"ok"}
+{"ts":"2026-09-20T03:48:07.496Z","type":"action_executed","actor":"agent","action":"fill","target":"Enter value into \"Nickname\" (via role)","outcome":"ok"}
+{"ts":"2026-09-20T03:48:07.502Z","type":"action_executed","actor":"agent","action":"fill","target":"Enter value into \"Opening Deposit\" (via role)","outcome":"ok"}
+{"ts":"2026-09-20T03:48:08.052Z","type":"action_executed","actor":"agent","action":"click","target":"Click \"Continue\" (via role)","outcome":"ok"}
+{"ts":"2026-09-20T03:48:08.072Z","type":"outcome_classified","bucket":"business_outcome","code":"validation_error","message":"Opening-deposit/nickname validation failed on the sub-account form -- caller should resubmit with corrected inputs."}
+{"ts":"2026-09-20T03:48:08.102Z","type":"run_finished","status":"business_outcome","detail":"{\"code\":\"validation_error\",\"message\":\"Opening-deposit/nickname validation failed on the sub-account form -- caller should resubmit with corrected inputs.\"}"}

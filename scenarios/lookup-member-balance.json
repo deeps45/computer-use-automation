@@ -1,0 +1,44 @@
+{
+  "capabilityId": "creditvantage.lookup-member-balance",
+  "name": "Look up member and read balances",
+  "description": "Logs into the CreditVantage servicing console, searches for a member by ID, opens their record, and reports current Savings and Checking balances.",
+  "goal": "You are operating the CreditVantage member servicing console. Sign in with username 'ops_agent' and password 'demo-pass'. Then search for member ID 12345, open their record, and read their current account balances. Use the extract tool once for the Savings balance (output_name 'savings_balance') and once for the Checking balance (output_name 'checking_balance') -- transcribe the exact dollar amounts shown, including the leading $ and cents. Only finish once both have been extracted and you can see them on the member detail screen.",
+  "baseUrl": "http://localhost:4173",
+  "appId": "creditvantage",
+  "appLabel": "CreditVantage Servicing Console (mock)",
+  "inputs": [
+    { "name": "memberId", "type": "string", "required": true, "description": "Core member/account-holder ID to look up.", "example": "12345" }
+  ],
+  "inputBindings": { "memberId": "12345" },
+  "outcomeRules": [
+    {
+      "id": "not_found",
+      "when": { "textPresent": "No member found for ID" },
+      "outcome": "business_outcome",
+      "code": "member_not_found",
+      "message": "No member exists in the core for the given ID."
+    },
+    {
+      "id": "restricted",
+      "when": { "textPresent": "do not have permission" },
+      "outcome": "business_outcome",
+      "code": "permission_denied",
+      "message": "This member's record is access-restricted (legal hold)."
+    },
+    {
+      "id": "session_timeout",
+      "when": { "urlPattern": "/login", "textPresent": "session expired" },
+      "outcome": "recoverable",
+      "code": "session_expired",
+      "message": "Session expired mid-flow.",
+      "recovery": { "type": "retry", "maxAttempts": 1, "waitMs": 500 }
+    },
+    {
+      "id": "server_error",
+      "when": { "statusCodeAtLeast": 500 },
+      "outcome": "hard_failure",
+      "code": "app_error",
+      "message": "Target application returned a server error."
+    }
+  ]
+}

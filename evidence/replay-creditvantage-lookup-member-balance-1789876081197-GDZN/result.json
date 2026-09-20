@@ -1,0 +1,18 @@
+{
+  "status": "business_outcome",
+  "capabilityId": "creditvantage.lookup-member-balance",
+  "capabilityVersion": 1,
+  "businessOutcome": {
+    "code": "member_not_found",
+    "message": "No member exists in the core for the given ID."
+  },
+  "escalated": false,
+  "runId": "replay-creditvantage-lookup-member-balance-[REDACTED-CC]-GDZN",
+  "evidence": {
+    "logPath": "log.jsonl",
+    "screenshotPaths": [
+      "screenshots/01-initial.png",
+      "screenshots/02-outcome-member_not_found.png"
+    ]
+  }
+}

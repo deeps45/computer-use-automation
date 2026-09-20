@@ -1,0 +1,141 @@
+# Computer-Use Automation System
+
+An LLM discovers how to operate a back-office web console the first time; the run is
+recorded as a typed, versioned **capability artifact**; that artifact then **replays
+deterministically**, with no model in the loop, verifying checkpoints and classifying
+runtime outcomes (business outcome / recoverable / hard failure). When it can't safely
+proceed, it pauses and hands the live session to a human operator.
+
+See **[REPORT.md](./REPORT.md)** for the design write-up and **[evidence/](./evidence/)**
+for logs and screenshots from real discovery and replay runs, including one that hits an
+error and one full human-in-the-loop escalation.
+
+## What's here
+
+- `target-app/` -- a mock "CreditVantage" credit-union servicing console (Express,
+  server-rendered, table layouts, no test IDs) standing in for a legacy back-office app.
+  Not the real thing -- see REPORT.md and the assignment brief for why a proxy target is
+  the right call here.
+- `src/agent/` -- the discovery loop (observe → decide → act) and the session it drives.
+- `src/browser/` -- perception (element indexing) and locator-building.
+- `src/replay/` -- the deterministic replay engine.
+- `src/guardrails/` -- allowlist, risk classification, redaction, secrets.
+- `src/handoff/` -- human-in-the-loop escalation and the operator console.
+- `src/artifact/` -- the capability schema and file-based store.
+- `scenarios/` -- the two natural-language goals used for discovery.
+- `artifacts/` -- saved capability artifacts (JSON), produced by discovery.
+- `evidence/` -- logs/screenshots from real runs (see `evidence/README.md`).
+
+## Setup
+
+Requires Node 20+.
+
+```bash
+npm install
+npx playwright install chromium
+cp .env.example .env   # then edit values as needed
+```
+
+Everything below reads its config from `.env` (via `dotenv`) or matching env vars.
+
+## Run without any live services / API key
+
+You can exercise the **entire deterministic replay path** -- guardrails, locator
+resolution, outcome classification, escalation/handoff -- using the capability artifacts
+already committed in `artifacts/`, which came from real discovery runs (see
+`evidence/README.md`). This needs only the target app running locally, no LLM API key:
+
+```bash
+# terminal 1
+npm run target-app
+
+# terminal 2
+CVSS_USERNAME=ops_agent CVSS_PASSWORD=demo-pass npx tsx src/cli/replay.ts \
+  creditvantage.lookup-member-balance --param memberId=12345
+```
+
+## Demo path: discovery → replay
+
+### 1. Start the target app
+
+```bash
+npm run target-app        # http://localhost:4173
+```
+
+### 2. Run discovery (produces a new capability artifact)
+
+With an `ANTHROPIC_API_KEY` set, this is fully automated -- Claude drives the browser via
+tool-calling, no human input needed:
+
+```bash
+export ANTHROPIC_API_KEY=sk-ant-...
+CVSS_USERNAME=ops_agent CVSS_PASSWORD=demo-pass \
+  npx tsx src/cli/discover.ts scenarios/lookup-member-balance.json
+```
+
+This launches a headed browser (set `HEADLESS=true` to run invisibly), starts the operator
+console at `http://localhost:4200`, and prints the saved artifact path
+(`artifacts/creditvantage.lookup-member-balance/v1.json`) plus the evidence directory on
+success. If an irreversible action is reached (see the `open-subaccount.json` scenario),
+the run pauses and prints where to approve it -- open the operator console and click
+**Resume**.
+
+**Without an API key**, the identical session can be driven manually (this is how the
+committed `artifacts/`/`evidence/` were actually produced -- see REPORT.md §1 and
+`evidence/README.md` for why):
+
+```bash
+CVSS_USERNAME=ops_agent CVSS_PASSWORD=demo-pass \
+  npx tsx src/cli/manual-discover-server.ts
+# in another terminal:
+curl -X POST localhost:4300/start -H 'content-type: application/json' \
+  -d '{"scenarioPath":"scenarios/lookup-member-balance.json"}'
+curl -X POST localhost:4300/act -H 'content-type: application/json' \
+  -d '{"tool":"fill","ref":0,"value":"ops_agent","reasoning":"..."}'
+# ...continue with click/fill/select_option/navigate/wait/extract/escalate/finish
+```
+
+### 3. Replay the resulting artifact (deterministic, no LLM)
+
+```bash
+CVSS_USERNAME=ops_agent CVSS_PASSWORD=demo-pass npx tsx src/cli/replay.ts \
+  creditvantage.lookup-member-balance --param memberId=12345
+```
+
+Try a different member to prove it's parameterized, not hard-coded:
+
+```bash
+npx tsx src/cli/replay.ts creditvantage.lookup-member-balance --param memberId=99999
+# -> {"status":"business_outcome","businessOutcome":{"code":"member_not_found",...}}
+```
+
+Try the irreversible-action capability, which pauses for approval unless you pass
+`--allow-irreversible`:
+
+```bash
+npx tsx src/cli/replay.ts creditvantage.open-subaccount \
+  --param memberId=34567 --param accountType=Checking \
+  --param nickname="Rent Buffer" --param openingDeposit=150
+# -> prints an intervention request + the operator console URL; approve it with:
+curl -X POST localhost:4200/api/intervention/<id>/resume \
+  -H 'content-type: application/json' -d '{"decision":"approve_and_continue"}'
+```
+
+Trigger a hard failure on demand (no target-app changes needed):
+
+```bash
+npx tsx src/cli/replay.ts creditvantage.lookup-member-balance \
+  --param memberId=12345 --simulate error500
+```
+
+## Every run's evidence
+
+Every discovery and replay run writes to `evidence/<runId>/`: `log.jsonl` (structured,
+redacted event log), `screenshots/`, and for replay, `result.json`. See
+`evidence/README.md` for an indexed walkthrough of the committed runs.
+
+## Config
+
+- `src/config/allowlist.json` -- allowed origins/routes/action types, and the regex
+  patterns used to classify an action as irreversible.
+- `.env` -- see `.env.example`.

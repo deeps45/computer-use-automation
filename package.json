@@ -1,0 +1,31 @@
+{
+  "name": "computer-use-automation",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "LLM-driven discovery -> reusable capability artifact -> deterministic replay, for legacy back-office UIs with no API.",
+  "scripts": {
+    "target-app": "tsx target-app/server.ts",
+    "discover": "tsx src/cli/discover.ts",
+    "manual-discover-server": "tsx src/cli/manual-discover-server.ts",
+    "replay": "tsx src/cli/replay.ts",
+    "operator": "tsx src/handoff/operator-server.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.32.1",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1",
+    "nanoid": "^5.0.9",
+    "playwright": "^1.49.1",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/node": "^22.10.2",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  }
+}

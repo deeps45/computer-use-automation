@@ -1,0 +1,18 @@
+{
+  "status": "success",
+  "capabilityId": "creditvantage.lookup-member-balance",
+  "capabilityVersion": 1,
+  "outputs": {
+    "savings_balance": "$152.33",
+    "checking_balance": "$40.00"
+  },
+  "escalated": false,
+  "runId": "replay-creditvantage-lookup-member-balance-[REDACTED-CC]-oPzT",
+  "evidence": {
+    "logPath": "log.jsonl",
+    "screenshotPaths": [
+      "screenshots/01-initial.png",
+      "screenshots/02-success.png"
+    ]
+  }
+}

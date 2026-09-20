@@ -1,0 +1,9 @@
+{"ts":"2026-09-20T03:47:31.106Z","type":"run_started","runType":"replay","goalOrCapabilityId":"creditvantage.lookup-member-balance","params":{"memberId":"23456"}}
+{"ts":"2026-09-20T03:47:32.256Z","type":"action_executed","actor":"agent","action":"fill","target":"Enter value into \"Username\" (via role)","outcome":"ok"}
+{"ts":"2026-09-20T03:47:32.302Z","type":"action_executed","actor":"agent","action":"fill","target":"Enter value into \"Password\" (via role)","outcome":"ok"}
+{"ts":"2026-09-20T03:47:32.858Z","type":"action_executed","actor":"agent","action":"click","target":"Click \"Sign In\" (via role)","outcome":"ok"}
+{"ts":"2026-09-20T03:47:32.902Z","type":"action_executed","actor":"agent","action":"fill","target":"Enter value into \"Member ID\" (via role)","outcome":"ok"}
+{"ts":"2026-09-20T03:47:33.466Z","type":"action_executed","actor":"agent","action":"click","target":"Click \"Search\" (via role)","outcome":"ok"}
+{"ts":"2026-09-20T03:47:34.029Z","type":"action_executed","actor":"agent","action":"click","target":"Click \"Open Record\" (via role)","outcome":"ok"}
+{"ts":"2026-09-20T03:47:34.068Z","type":"action_executed","actor":"agent","action":"extract","target":"savings_balance (via xpath)","outcome":"ok","detail":"$9820.00"}
+{"ts":"2026-09-20T03:47:34.111Z","type":"run_finished","status":"failure","detail":"{\"stepId\":\"s8\",\"stepDescription\":\"Extract checking_balance\",\"expected\":\"Extract checking_balance\",\"observed\":\"Could not resolve target \\\"Extract checking_balance\\\". Tried, in order: xpath=//tr[td[1][normalize-space()='Checking']]/td[3]\",\"message\":\"Hard failure at step \\\"s8\\\": Could not resolve target \\\"Extract checking_balance\\\". Tried, in order: xpath=//tr[td[1][normalize-space()='Checking']]/td[3]\"}"}

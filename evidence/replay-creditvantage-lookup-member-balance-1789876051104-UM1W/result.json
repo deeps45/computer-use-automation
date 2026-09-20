@@ -1,0 +1,21 @@
+{
+  "status": "failure",
+  "capabilityId": "creditvantage.lookup-member-balance",
+  "capabilityVersion": 1,
+  "escalated": false,
+  "failure": {
+    "stepId": "s8",
+    "stepDescription": "Extract checking_balance",
+    "expected": "Extract checking_balance",
+    "observed": "Could not resolve target \"Extract checking_balance\". Tried, in order: xpath=//tr[td[1][normalize-space()='Checking']]/td[3]",
+    "message": "Hard failure at step \"s8\": Could not resolve target \"Extract checking_balance\". Tried, in order: xpath=//tr[td[1][normalize-space()='Checking']]/td[3]"
+  },
+  "runId": "replay-creditvantage-lookup-member-balance-[REDACTED-CC]-UM1W",
+  "evidence": {
+    "logPath": "log.jsonl",
+    "screenshotPaths": [
+      "screenshots/01-initial.png",
+      "screenshots/02-failure-s8.png"
+    ]
+  }
+}

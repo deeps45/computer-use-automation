@@ -1,0 +1,14 @@
+{
+  "allowedOrigins": ["http://localhost:4173"],
+  "allowedActionTypes": ["navigate", "click", "fill", "selectOption", "waitFor", "extract", "assertCheckpoint"],
+  "blockedRoutePatterns": ["/admin/system-config", "/admin/users"],
+  "riskyTextPatterns": [
+    "confirm\\s*&?\\s*open",
+    "confirm\\s*&?\\s*submit",
+    "\\bdelete\\b",
+    "\\btransfer funds\\b",
+    "\\bclose account\\b",
+    "\\bapprove\\b"
+  ],
+  "riskyPageBannerPatterns": ["cannot be undone"]
+}

@@ -1,0 +1,54 @@
+{
+  "capabilityId": "creditvantage.open-subaccount",
+  "name": "Open a member sub-account",
+  "description": "Logs in, opens a new sub-account for a member (type, nickname, opening deposit), confirms the irreversible creation step, and reports the new account number.",
+  "goal": "You are operating the CreditVantage member servicing console. Sign in with username 'ops_agent' and password 'demo-pass'. Open member 12345's record, then open a new sub-account: choose account type 'Savings', nickname it 'Trip Fund', and set the opening deposit to 100. Proceed to the confirmation screen and confirm the account creation -- this is an irreversible action, so if you are asked to pause for approval, wait for it. Once the account is created, extract the new account number shown on the success screen as output_name 'new_account_number'. Finish once you can see the success confirmation.",
+  "baseUrl": "http://localhost:4173",
+  "appId": "creditvantage",
+  "appLabel": "CreditVantage Servicing Console (mock)",
+  "inputs": [
+    { "name": "memberId", "type": "string", "required": true, "description": "Member to open the sub-account for.", "example": "12345" },
+    { "name": "accountType", "type": "string", "required": true, "description": "Savings or Checking.", "example": "Savings" },
+    { "name": "nickname", "type": "string", "required": true, "description": "Display nickname for the new sub-account.", "example": "Trip Fund" },
+    { "name": "openingDeposit", "type": "number", "required": true, "description": "Opening deposit amount in USD; must be >= 25.", "example": "100" }
+  ],
+  "inputBindings": { "memberId": "12345", "accountType": "Savings", "nickname": "Trip Fund", "openingDeposit": "100" },
+  "outcomeRules": [
+    {
+      "id": "validation_error",
+      "when": { "textPresent": "Validation error" },
+      "outcome": "business_outcome",
+      "code": "validation_error",
+      "message": "Opening-deposit/nickname validation failed on the sub-account form -- caller should resubmit with corrected inputs."
+    },
+    {
+      "id": "expired_confirmation",
+      "when": { "textPresent": "invalid or has expired" },
+      "outcome": "hard_failure",
+      "code": "confirmation_expired",
+      "message": "The confirmation token expired or was already used."
+    },
+    {
+      "id": "not_found",
+      "when": { "textPresent": "does not exist in the core" },
+      "outcome": "business_outcome",
+      "code": "member_not_found",
+      "message": "No member exists in the core for the given ID."
+    },
+    {
+      "id": "session_timeout",
+      "when": { "urlPattern": "/login", "textPresent": "session expired" },
+      "outcome": "recoverable",
+      "code": "session_expired",
+      "message": "Session expired mid-flow.",
+      "recovery": { "type": "retry", "maxAttempts": 1, "waitMs": 500 }
+    },
+    {
+      "id": "server_error",
+      "when": { "statusCodeAtLeast": 500 },
+      "outcome": "hard_failure",
+      "code": "app_error",
+      "message": "Target application returned a server error."
+    }
+  ]
+}
