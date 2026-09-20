@@ -50,7 +50,15 @@ export class DiscoverySession {
   private startedAt = 0;
   private finished = false;
 
-  constructor(readonly scenario: Scenario, private maxSteps: number, private maxRuntimeMs: number) {
+  constructor(
+    readonly scenario: Scenario,
+    private maxSteps: number,
+    private maxRuntimeMs: number,
+    /** Recorded into the artifact's provenance -- set by whichever loop (Anthropic-direct
+     * or OpenAI-compatible-gateway) actually drives this session, since they may use
+     * different models. */
+    private modelId: string = process.env.MODEL_ID || "claude-sonnet-5"
+  ) {
     this.runId = `discovery-${scenario.capabilityId.replace(/\./g, "-")}-${Date.now()}`;
     this.logger = new RunLogger("evidence", this.runId);
   }
@@ -310,7 +318,7 @@ export class DiscoverySession {
       description: this.scenario.description,
       version: 1,
       createdAt: new Date().toISOString(),
-      provenance: { discoveredBy: "llm", model: process.env.MODEL_ID || "claude-sonnet-5", discoveryRunId: this.runId },
+      provenance: { discoveredBy: "llm", model: this.modelId, discoveryRunId: this.runId },
       target: { appId: this.scenario.appId, label: this.scenario.appLabel, baseUrl: this.scenario.baseUrl, allowedOrigins: [origin] },
       inputs: this.scenario.inputs,
       outputs: outputSpecs,

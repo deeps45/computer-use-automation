@@ -17,14 +17,26 @@ explicitly asks for a small, correct system over scaling infrastructure. The lay
 - **`src/agent/session-controller.ts`** -- the observe → decide → act state machine
   (`DiscoverySession`): guardrail checks, risk classification, escalation, and artifact
   assembly all live here, independent of *who* decides the next action.
-- **`src/agent/discovery-loop.ts`** -- the production decision-maker: drives a
-  `DiscoverySession` via the Anthropic Messages API with forced tool-calling
-  (`tool_choice: "any"`), feeding it the element list + a live screenshot each turn.
+- **`src/agent/discovery-loop.ts`** -- drives a `DiscoverySession` via the Anthropic
+  Messages API directly, with forced tool-calling (`tool_choice: "any"`), feeding it the
+  element list + a live screenshot each turn.
+- **`src/agent/discovery-loop-openai-compat.ts`** -- the *same* `DiscoverySession`, driven
+  instead through any OpenAI-compatible chat-completions gateway (`tools` + `tool_choice`,
+  vision via `image_url` content parts). This is not a hypothetical seam: the two runs in
+  `/evidence/` were produced through it, against a university LLM gateway proxying real
+  Claude Sonnet 4.5 on Bedrock. `cli/discover.ts` picks whichever loop matches the
+  credentials present (`ANTHROPIC_API_KEY` vs `OPENAI_COMPAT_API_KEY`) -- same guardrails,
+  same locator-building, same artifact assembly either way, since both are thin decision-
+  making shells around the one shared `DiscoverySession`. Getting this working for real
+  surfaced two bugs worth naming: the gateway's `stream:false` had to be sent as the literal
+  string `"false"` (a typed JSON `false` still came back as an SSE stream -- see the
+  `chatCompletion` docstring), and a growing request body from accumulated screenshots
+  caused intermittent connection resets, fixed with bounded retry plus pruning every
+  observation's image except the most recent one out of the running message history.
 - **`src/cli/manual-discover-server.ts`** -- the *same* `DiscoverySession` exposed over a
-  thin HTTP API (`POST /start`, `POST /act`), so the identical guardrails, locator-building,
-  and artifact assembly that `discovery-loop.ts` exercises can be driven turn-by-turn by any
-  LLM-driven caller, not only the in-process Anthropic tool-calling loop. The two runs in
-  `/evidence/` were produced this way. See `evidence/README.md` for details on those runs.
+  thin HTTP API (`POST /start`, `POST /act`) for driving it turn-by-turn with no LLM API
+  access at all -- a fallback path, kept for resilience but not how the current
+  `/evidence/` runs were produced. See `evidence/README.md`.
 - **`src/replay/executor.ts`** -- the deterministic path: no LLM, resolves `TargetRef`s
   against the live page, checks a declarative outcome taxonomy before every step, verifies
   checkpoints, returns a typed result.

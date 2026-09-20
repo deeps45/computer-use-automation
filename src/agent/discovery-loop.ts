@@ -41,7 +41,7 @@ export async function runDiscovery(scenario: Scenario): Promise<DiscoveryOutcome
     throw new Error("ANTHROPIC_API_KEY is not set. Export it before running automated discovery (see README.md).");
   }
   const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
-  const session = new DiscoverySession(scenario, MAX_STEPS, MAX_RUNTIME_MS);
+  const session = new DiscoverySession(scenario, MAX_STEPS, MAX_RUNTIME_MS, MODEL_ID);
   const headless = process.env.HEADLESS === "true";
 
   try {

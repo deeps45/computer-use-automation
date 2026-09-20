@@ -9,21 +9,27 @@ of the operator console), see **[docs/screenshots/](../docs/screenshots/)** and 
 "Screenshots" section of the root [README.md](../README.md) -- everything there is embedded
 inline for easy browsing.
 
-## Discovery runs (real, live, LLM-driven)
+## Discovery runs (real, live, fully automated -- LLM tool-calling end to end)
 
-- `discovery-creditvantage-lookup-member-balance-1789875705883/` -- goal: *"search for
+Both runs below were produced by `src/agent/discovery-loop-openai-compat.ts`: the real
+`DiscoverySession` driven by actual Claude Sonnet 4.5 tool-calling API calls (via an
+OpenAI-compatible chat-completions gateway, model id `protected.Claude Sonnet 4.5`, proxying
+to `us.anthropic.claude-sonnet-4-5-20250929-v1:0` on Bedrock) -- no human chose any of the
+individual actions. `src/agent/discovery-loop.ts` (direct Anthropic Messages API) is the
+alternate, equally-real automated path, selected automatically by `cli/discover.ts` based on
+which credentials are set; `src/cli/manual-discover-server.ts` remains available as a
+fallback for driving the same session with no LLM API access at all. See REPORT.md's
+Architecture section.
+
+- `discovery-creditvantage-lookup-member-balance-1789908118501/` -- goal: *"search for
   member 12345 ... report Savings and Checking balances"*. 9 turns, no escalation needed.
   Produced `artifacts/creditvantage.lookup-member-balance/v1.json`.
-- `discovery-creditvantage-open-subaccount-1789875924369/` -- goal: *"open a new Savings
-  sub-account ... confirm ... report the new account number"*. 14 turns, **includes one
+- `discovery-creditvantage-open-subaccount-1789908138061/` -- goal: *"open a new Savings
+  sub-account ... confirm ... report the new account number"*. 13 turns, **includes one
   live irreversible-action escalation** (see `log.jsonl` for `escalation_raised` /
-  `escalation_resumed` events around step 12, the "Confirm & Open Account" click) that
-  paused the run until approved via the operator console. Produced
-  `artifacts/creditvantage.open-subaccount/v1.json`.
-
-Who drove the decisions: see REPORT.md's Architecture section (`src/agent/discovery-loop.ts`
-is the production, Anthropic-API-driven path; `src/cli/manual-discover-server.ts` exposes
-the identical session for any other LLM-driven caller, and is how these two runs were made).
+  `escalation_resumed` events around step 11, the "Confirm & Open Account" click) that
+  genuinely paused the automated run mid-flight until approved via the operator console.
+  Produced `artifacts/creditvantage.open-subaccount/v1.json`.
 
 ## Replay runs (deterministic, no LLM) -- every status/outcome-code combination
 

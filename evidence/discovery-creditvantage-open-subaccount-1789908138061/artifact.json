@@ -4,10 +4,10 @@
   "name": "Open a member sub-account",
   "description": "Logs in, opens a new sub-account for a member (type, nickname, opening deposit), confirms the irreversible creation step, and reports the new account number.",
   "version": 1,
-  "createdAt": "2026-09-20T03:46:18.174Z",
+  "createdAt": "2026-09-20T12:42:59.424Z",
   "provenance": {
     "discoveredBy": "llm",
-    "model": "claude-sonnet-5",
+    "model": "protected.Claude Sonnet 4.5 (via https://chat-api.tamu.ai/api)",
     "discoveryRunId": "discovery-creditvantage-open-subaccount-[REDACTED-CC]"
   },
   "target": {
@@ -52,7 +52,7 @@
     {
       "name": "new_account_number",
       "type": "string",
-      "description": "New account number is shown on the success screen as required by the goal."
+      "description": "Extracting the new account number from the success screen showing the newly created sub-account for member 12345"
     }
   ],
   "steps": [
@@ -247,37 +247,6 @@
     },
     {
       "id": "s8",
-      "type": "selectOption",
-      "description": "Select \"Savings\" in \"Account Type\"",
-      "risk": "safe",
-      "timeoutMs": 8000,
-      "target": {
-        "description": "Select \"Savings\" in \"Account Type\"",
-        "candidates": [
-          {
-            "strategy": "role",
-            "role": "combobox",
-            "name": "Account Type",
-            "exact": true
-          },
-          {
-            "strategy": "label",
-            "text": "Account Type"
-          },
-          {
-            "strategy": "css",
-            "selector": "select[name=\"accountType\"]"
-          }
-        ],
-        "rationale": "Role + accessible name is preferred (stable across CSS/layout changes); a form-field name/id attribute is kept as a fallback because legacy markup often lacks it, and it is the most implementation-coupled option so it is tried last."
-      },
-      "value": {
-        "kind": "param",
-        "name": "accountType"
-      }
-    },
-    {
-      "id": "s9",
       "type": "fill",
       "description": "Enter value into \"Nickname\"",
       "risk": "safe",
@@ -308,7 +277,7 @@
       }
     },
     {
-      "id": "s10",
+      "id": "s9",
       "type": "fill",
       "description": "Enter value into \"Opening Deposit\"",
       "risk": "safe",
@@ -339,7 +308,7 @@
       }
     },
     {
-      "id": "s11",
+      "id": "s10",
       "type": "click",
       "description": "Click \"Continue\"",
       "risk": "safe",
@@ -363,7 +332,7 @@
       }
     },
     {
-      "id": "s12",
+      "id": "s11",
       "type": "click",
       "description": "Click \"Confirm & Open Account\"",
       "risk": "irreversible",
@@ -387,7 +356,7 @@
       }
     },
     {
-      "id": "s13",
+      "id": "s12",
       "type": "extract",
       "description": "Extract new_account_number",
       "risk": "safe",
@@ -406,13 +375,13 @@
       "extractAttribute": "text"
     },
     {
-      "id": "s14",
+      "id": "s13",
       "type": "assertCheckpoint",
-      "description": "Success screen shown with new sub-account number after confirming account creation.",
+      "description": "The success page displays the banner \"Sub-account opened successfully.\" and shows the new account number SA-9001-12345 at URL http://localhost:4173/members/12345/subaccount/success?acct=SA-9001-12345",
       "risk": "safe",
       "timeoutMs": 8000,
       "checkpoint": {
-        "description": "Success screen shown with new sub-account number after confirming account creation.",
+        "description": "The success page displays the banner \"Sub-account opened successfully.\" and shows the new account number SA-9001-12345 at URL http://localhost:4173/members/12345/subaccount/success?acct=SA-9001-12345",
         "urlPattern": "/members/",
         "textPresent": "Sub-account opened successfully."
       }
@@ -472,13 +441,13 @@
     }
   ],
   "successCheckpoint": {
-    "description": "Success screen shown with new sub-account number after confirming account creation.",
+    "description": "The success page displays the banner \"Sub-account opened successfully.\" and shows the new account number SA-9001-12345 at URL http://localhost:4173/members/12345/subaccount/success?acct=SA-9001-12345",
     "urlPattern": "/members/"
   },
   "risk": {
     "hasIrreversibleSteps": true,
     "irreversibleStepIds": [
-      "s12"
+      "s11"
     ]
   }
 }

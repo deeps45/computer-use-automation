@@ -4,11 +4,11 @@
   "name": "Look up member and read balances",
   "description": "Logs into the CreditVantage servicing console, searches for a member by ID, opens their record, and reports current Savings and Checking balances.",
   "version": 1,
-  "createdAt": "2026-09-20T03:42:21.483Z",
+  "createdAt": "2026-09-20T12:42:07.196Z",
   "provenance": {
     "discoveredBy": "llm",
-    "model": "claude-sonnet-5",
-    "discoveryRunId": "discovery-creditvantage-lookup-member-balance-1789875705883"
+    "model": "protected.Claude Sonnet 4.5 (via https://chat-api.tamu.ai/api)",
+    "discoveryRunId": "discovery-creditvantage-lookup-member-balance-1789908118501"
   },
   "target": {
     "appId": "creditvantage",
@@ -31,12 +31,12 @@
     {
       "name": "savings_balance",
       "type": "string",
-      "description": "Savings balance is visible in the account table for member 12345."
+      "description": "Extracting the Savings account balance for member ID 12345 from the member detail screen"
     },
     {
       "name": "checking_balance",
       "type": "string",
-      "description": "Checking balance is visible in the account table for member 12345."
+      "description": "Extracting the Checking account balance for member ID 12345 from the member detail screen"
     }
   ],
   "steps": [
@@ -246,10 +246,10 @@
     {
       "id": "s9",
       "type": "assertCheckpoint",
-      "description": "Member detail page for 12345 shows the account table with Savings and Checking balances visible.",
+      "description": "On member detail page at URL http://localhost:4173/members/12345, showing Member 12345 (Doe, Jane) with Savings balance $2450.10 and Checking balance $310.55. Both balances have been extracted using the extract tool.",
       "risk": "safe",
       "checkpoint": {
-        "description": "Member detail page for 12345 shows the account table with Savings and Checking balances visible.",
+        "description": "On member detail page at URL http://localhost:4173/members/12345, showing Member 12345 (Doe, Jane) with Savings balance $2450.10 and Checking balance $310.55. Both balances have been extracted using the extract tool.",
         "urlPattern": "/members/"
       },
       "timeoutMs": 8000
@@ -300,7 +300,7 @@
     }
   ],
   "successCheckpoint": {
-    "description": "Member detail page for 12345 shows the account table with Savings and Checking balances visible.",
+    "description": "On member detail page at URL http://localhost:4173/members/12345, showing Member 12345 (Doe, Jane) with Savings balance $2450.10 and Checking balance $310.55. Both balances have been extracted using the extract tool.",
     "urlPattern": "/members/"
   },
   "risk": {

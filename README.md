@@ -161,8 +161,8 @@ show every state of both UIs in one place.
 </td>
 <td width="50%">
 
-**Discovery agent's actual view of the balance screen** -- what the LLM saw and extracted from, mid-run
-![Discovery run screenshot](evidence/discovery-creditvantage-lookup-member-balance-1789875705883/screenshots/07-after-action.png)
+**Discovery agent's actual view of the balance screen** -- what the LLM saw and extracted from, mid-run (real, fully-automated tool-calling run)
+![Discovery run screenshot](evidence/discovery-creditvantage-lookup-member-balance-1789908118501/screenshots/07-after-action.png)
 
 </td>
 </tr>
@@ -275,8 +275,11 @@ npm run target-app        # http://localhost:4173
 
 ### 2. Run discovery (produces a new capability artifact)
 
-With an `ANTHROPIC_API_KEY` set, this is fully automated -- Claude drives the browser via
-tool-calling, no human input needed:
+This is fully automated either way -- the model drives the browser via tool-calling, no
+human input needed for the routine steps. `cli/discover.ts` picks the provider from
+whichever credentials are set:
+
+**Option A -- Anthropic directly:**
 
 ```bash
 export ANTHROPIC_API_KEY=sk-ant-...
@@ -284,16 +287,29 @@ CVSS_USERNAME=ops_agent CVSS_PASSWORD=demo-pass \
   npx tsx src/cli/discover.ts scenarios/lookup-member-balance.json
 ```
 
-This launches a headed browser (set `HEADLESS=true` to run invisibly), starts the operator
-console at `http://localhost:4200`, and prints the saved artifact path
+**Option B -- any OpenAI-compatible chat-completions gateway** (this is how the committed
+`artifacts/`/`evidence/` were actually produced -- against a university LLM gateway
+proxying Claude Sonnet 4.5 on Bedrock; see `discovery-loop-openai-compat.ts` and
+REPORT.md §1):
+
+```bash
+export OPENAI_COMPAT_API_KEY=...
+export OPENAI_COMPAT_BASE_URL=https://your-gateway.example/api   # expects POST {base}/chat/completions
+export OPENAI_COMPAT_MODEL="protected.Claude Sonnet 4.5"          # whatever model id your gateway exposes
+CVSS_USERNAME=ops_agent CVSS_PASSWORD=demo-pass \
+  npx tsx src/cli/discover.ts scenarios/lookup-member-balance.json
+```
+
+Either way this launches a headed browser (set `HEADLESS=true` to run invisibly), starts
+the operator console at `http://localhost:4200`, and prints the saved artifact path
 (`artifacts/creditvantage.lookup-member-balance/v1.json`) plus the evidence directory on
 success. If an irreversible action is reached (see the `open-subaccount.json` scenario),
 the run pauses and prints where to approve it -- open the operator console and click
 **Resume**.
 
-**Without an API key**, the identical session can be driven manually (this is how the
-committed `artifacts/`/`evidence/` were actually produced -- see REPORT.md §1 and
-`evidence/README.md` for why):
+**With no LLM API access at all**, the identical session can still be driven manually, turn
+by turn, over a thin HTTP control surface -- a fallback, not how the current evidence was
+produced:
 
 ```bash
 CVSS_USERNAME=ops_agent CVSS_PASSWORD=demo-pass \

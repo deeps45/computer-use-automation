@@ -30,7 +30,12 @@ async function main() {
     if (session) return res.status(400).json({ error: "A session is already active. POST /close first." });
     try {
       const scenario = loadScenario(path.resolve(req.body.scenarioPath));
-      session = new DiscoverySession(scenario, Number(process.env.AGENT_MAX_STEPS || 25), Number(process.env.AGENT_MAX_RUNTIME_MS || 6 * 60 * 1000));
+      session = new DiscoverySession(
+        scenario,
+        Number(process.env.AGENT_MAX_STEPS || 25),
+        Number(process.env.AGENT_MAX_RUNTIME_MS || 6 * 60 * 1000),
+        "manual-http-control-surface (LLM-driven, non-API -- see cli/manual-discover-server.ts)"
+      );
       const headless = process.env.HEADLESS === "true";
       const obs = await session.start(headless);
       res.json({ goal: scenario.goal, runId: session.runId, logDir: session.logger.runDir, ...obs });

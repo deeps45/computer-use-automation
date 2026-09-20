@@ -4,10 +4,10 @@
   "name": "Look up member and read balances",
   "description": "Logs into the CreditVantage servicing console, searches for a member by ID, opens their record, and reports current Savings and Checking balances.",
   "version": 1,
-  "createdAt": "2026-09-20T03:42:21.483Z",
+  "createdAt": "2026-09-20T12:42:07.196Z",
   "provenance": {
     "discoveredBy": "llm",
-    "model": "claude-sonnet-5",
+    "model": "protected.Claude Sonnet 4.5 (via https://chat-api.tamu.ai/api)",
     "discoveryRunId": "discovery-creditvantage-lookup-member-balance-[REDACTED-CC]"
   },
   "target": {
@@ -31,12 +31,12 @@
     {
       "name": "savings_balance",
       "type": "string",
-      "description": "Savings balance is visible in the account table for member 12345."
+      "description": "Extracting the Savings account balance for member ID 12345 from the member detail screen"
     },
     {
       "name": "checking_balance",
       "type": "string",
-      "description": "Checking balance is visible in the account table for member 12345."
+      "description": "Extracting the Checking account balance for member ID 12345 from the member detail screen"
     }
   ],
   "steps": [
@@ -217,10 +217,6 @@
           {
             "strategy": "xpath",
             "expression": "//tr[td[1][normalize-space()='Savings']]/td[3]"
-          },
-          {
-            "strategy": "xpath",
-            "expression": "(//th[normalize-space()='Balance']/ancestor::table[1]//td)[3]"
           }
         ],
         "rationale": "Row-relative: identified by the stable row label \"Savings\" plus a fixed column offset, not by the cell's own (variable) value."
@@ -240,10 +236,6 @@
           {
             "strategy": "xpath",
             "expression": "//tr[td[1][normalize-space()='Checking']]/td[3]"
-          },
-          {
-            "strategy": "xpath",
-            "expression": "(//th[normalize-space()='Balance']/ancestor::table[1]//td)[3]"
           }
         ],
         "rationale": "Row-relative: identified by the stable row label \"Checking\" plus a fixed column offset, not by the cell's own (variable) value."
@@ -254,11 +246,11 @@
     {
       "id": "s9",
       "type": "assertCheckpoint",
-      "description": "Member detail page for 12345 shows the account table with Savings and Checking balances visible.",
+      "description": "On member detail page at URL http://localhost:4173/members/12345, showing Member 12345 (Doe, Jane) with Savings balance $2450.10 and Checking balance $310.55. Both balances have been extracted using the extract tool.",
       "risk": "safe",
       "timeoutMs": 8000,
       "checkpoint": {
-        "description": "Member detail page for 12345 shows the account table with Savings and Checking balances visible.",
+        "description": "On member detail page at URL http://localhost:4173/members/12345, showing Member 12345 (Doe, Jane) with Savings balance $2450.10 and Checking balance $310.55. Both balances have been extracted using the extract tool.",
         "urlPattern": "/members/"
       }
     }
@@ -308,7 +300,7 @@
     }
   ],
   "successCheckpoint": {
-    "description": "Member detail page for 12345 shows the account table with Savings and Checking balances visible.",
+    "description": "On member detail page at URL http://localhost:4173/members/12345, showing Member 12345 (Doe, Jane) with Savings balance $2450.10 and Checking balance $310.55. Both balances have been extracted using the extract tool.",
     "urlPattern": "/members/"
   },
   "risk": {
